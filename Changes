@@ -1,0 +1,10 @@
+---
+global:
+  name: Google-Chart
+releases:
+  - author: 'Marcel Gruenauer <marcel@cpan.org>'
+    changes:
+      - original version
+    date: 2007-12-06T19:37:44Z
+    tags: []
+    version: 0.01
