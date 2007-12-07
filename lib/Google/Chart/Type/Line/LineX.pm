@@ -1,4 +1,4 @@
-package Google::Chart::Type::Pie;
+package Google::Chart::Type::Line::LineX;
 
 use strict;
 use warnings;
@@ -7,7 +7,10 @@ use warnings;
 our $VERSION = '0.02';
 
 
-use base qw(Google::Chart::Type);
+use base qw(Google::Chart::Type::Line);
+
+
+use constant as_string => 'cht=lc';
 
 
 1;
@@ -19,11 +22,11 @@ __END__
 
 =head1 NAME
 
-Google::Chart::Type::Pie - Draw a chart with Google Chart
+Google::Chart::Type::Line::LineX - Draw a chart with Google Chart
 
 =head1 SYNOPSIS
 
-    Google::Chart::Type::Pie->new;
+    Google::Chart::Type::Line::LineX->new;
 
 =head1 WARNING
 
@@ -37,7 +40,8 @@ the documentation. Patches welcome.
 This set of classes uses the Google Chart API - see
 L<http://code.google.com/apis/chart/> - to draw charts.
 
-Google::Chart::Type::Pie inherits from L<Google::Chart::Type>.
+Google::Chart::Type::Line::LineX inherits from
+L<Google::Chart::Type::Line>.
 
 The superclass L<Google::Chart::Base> defines these methods and functions:
 
@@ -133,7 +137,7 @@ please use the C<googlechart> tag.
 
 =head1 VERSION 
                    
-This document describes version 0.02 of L<Google::Chart::Type::Pie>.
+This document describes version 0.02 of L<Google::Chart::Type::Line::LineX>.
 
 =head1 BUGS AND LIMITATIONS
 

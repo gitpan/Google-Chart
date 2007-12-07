@@ -5,7 +5,7 @@ use warnings;
 use LWP::UserAgent;
 
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 
 use base qw(
@@ -17,9 +17,10 @@ use base qw(
 __PACKAGE__
     ->mk_scalar_accessors(qw(title))
     ->mk_factory_typed_accessors('Google::Chart::Factory',
-        data => 'data',
-        type => 'type',
-        size => 'size',
+        data       => 'data',
+        type       => 'type',
+        size       => 'size',
+        color_data => 'color_data',
     );
 
 
@@ -61,24 +62,43 @@ sub data_spec {
 }
 
 
+sub colors {
+    my ($self, @args) = @_;
+    @args =
+        map { $self->make_obj('color')->guess($_) }
+        @args;
+    $self->color_data(colors => \@args);
+}
+
+
 # End of convenience methods
 
 
 sub validate {
     my $self = shift;
-    my @error = $self->size->validate;
+    my @error = map { $self->$_->validate } qw(
+        size type data color_data
+    );
     die join "\n" => @error if @error;
 }
 
 
 sub get_url {
     my $self = shift;
-    $self->API_URI .
+    my $url = $self->API_URI .
         join '&' =>
-        map { $_->as_string }
-        $self->size, $self->data, $self->type;
+        map { $self->$_->as_string }
+        grep { $self->$_->has_content }
+        qw(size data type color_data);
 }
 
+
+sub img_tag {
+    my $self = shift;
+    my $url = $self->get_url;
+    $url =~ s/&/&amp;/g;
+    qq{<IMG SRC="$url" />};
+}
 
 sub render {
     my $self = shift;
@@ -146,18 +166,43 @@ as Douglas Coupland puts it, or rather, in the spirit of point-oh-one.
 This set of classes uses the Google Chart API - see
 L<http://code.google.com/apis/chart/> - to draw charts.
 
+=head1 METHODS
+
+=over 4
+
+=item clear_title
+
+    $obj->clear_title;
+
+Clears the value.
+
+=item title
+
+    my $value = $obj->title;
+    $obj->title($value);
+
+A basic getter/setter method. If called without an argument, it returns the
+value. If called with a single argument, it sets the value.
+
+=item title_clear
+
+    $obj->title_clear;
+
+Clears the value.
+
+=back
+
 Google::Chart inherits from L<Google::Chart::Base> and
 L<Google::Chart::Factory>.
 
 The superclass L<Google::Chart::Base> defines these methods and functions:
 
-    new()
+    new(), is_number()
 
 The superclass L<Class::Accessor::Complex> defines these methods and
 functions:
 
-    carp(), cluck(), croak(), flatten(), mk_abstract_accessors(),
-    mk_array_accessors(), mk_boolean_accessors(),
+    mk_abstract_accessors(), mk_array_accessors(), mk_boolean_accessors(),
     mk_class_array_accessors(), mk_class_hash_accessors(),
     mk_class_scalar_accessors(), mk_concat_accessors(),
     mk_forward_accessors(), mk_hash_accessors(), mk_integer_accessors(),
@@ -175,13 +220,13 @@ The superclass L<Class::Accessor> defines these methods and functions:
 The superclass L<Class::Accessor::Installer> defines these methods and
 functions:
 
-    install_accessor(), subname()
+    install_accessor()
 
 The superclass L<Class::Accessor::Constructor> defines these methods and
 functions:
 
-    NO_DIRTY(), WITH_DIRTY(), _make_constructor(), mk_constructor(),
-    mk_constructor_with_dirty(), mk_singleton_constructor()
+    _make_constructor(), mk_constructor(), mk_constructor_with_dirty(),
+    mk_singleton_constructor()
 
 The superclass L<Data::Inherited> defines these methods and functions:
 
@@ -211,8 +256,7 @@ functions:
     pop_factory_typed_accessors(), pop_factory_typed_array_accessors(),
     push_factory_typed_accessors(), push_factory_typed_array_accessors(),
     set_factory_typed_accessors(), set_factory_typed_array_accessors(),
-    set_push(), shift_factory_typed_accessors(),
-    shift_factory_typed_array_accessors(),
+    shift_factory_typed_accessors(), shift_factory_typed_array_accessors(),
     splice_factory_typed_accessors(),
     splice_factory_typed_array_accessors(),
     unshift_factory_typed_accessors(),
@@ -221,10 +265,10 @@ functions:
 The superclass L<Class::Accessor::Constructor::Base> defines these methods
 and functions:
 
-    HYGIENIC(), STORE(), clear_dirty(), clear_hygienic(),
-    clear_unhygienic(), contains_hygienic(), contains_unhygienic(),
-    delete_hygienic(), delete_unhygienic(), dirty(), dirty_clear(),
-    dirty_set(), elements_hygienic(), elements_unhygienic(), hygienic(),
+    STORE(), clear_dirty(), clear_hygienic(), clear_unhygienic(),
+    contains_hygienic(), contains_unhygienic(), delete_hygienic(),
+    delete_unhygienic(), dirty(), dirty_clear(), dirty_set(),
+    elements_hygienic(), elements_unhygienic(), hygienic(),
     hygienic_clear(), hygienic_contains(), hygienic_delete(),
     hygienic_elements(), hygienic_insert(), hygienic_is_empty(),
     hygienic_size(), insert_hygienic(), insert_unhygienic(),
@@ -251,32 +295,6 @@ The superclass L<Class::Factory> defines these methods and functions:
     get_registered_classes(), get_registered_types(), init(),
     remove_factory_type(), unregister_factory_type()
 
-=head1 METHODS
-
-=over 4
-
-=item clear_title
-
-    $obj->clear_title;
-
-Clears the value.
-
-=item title
-
-    my $value = $obj->title;
-    $obj->title($value);
-
-A basic getter/setter method. If called without an argument, it returns the
-value. If called with a single argument, it sets the value.
-
-=item title_clear
-
-    $obj->title_clear;
-
-Clears the value.
-
-=back
-
 =head1 TAGS
 
 If you talk about this module in blogs, on del.icio.us or anywhere else,
@@ -284,7 +302,7 @@ please use the C<googlechart> tag.
 
 =head1 VERSION 
                    
-This document describes version 0.01 of L<Google::Chart>.
+This document describes version 0.02 of L<Google::Chart>.
 
 =head1 BUGS AND LIMITATIONS
 

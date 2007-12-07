@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 
 use base qw(
@@ -15,6 +15,36 @@ use base qw(
 
 
 __PACKAGE__->mk_constructor;
+
+
+sub validate {}
+
+
+# taken from Test::Numeric
+
+sub is_number {
+    my ($self, $number) = @_;
+
+    return 0 unless defined $number && length $number;
+
+    # Accept obviously right things.
+    return 1 if $number =~ m/^\d+$/;
+
+    # Throw out obviously wrong things.
+    return 0 if $number =~ m/[^+\-\.eE0-9]/;
+
+    # Split the number into parts.
+    my ( $num, $e, $exp ) = split /(e|E)/, $number, 2;
+
+    # Check that the exponent is valid.
+    if ($e) { return 0 unless $exp =~ m/^[+\-]?\d+$/; }
+
+    # Check the number.
+    return 0 unless $num =~ m/\d/;
+    return 0 unless $num =~ m/^[+\-]?\d*\.?\d*$/;
+
+    return 1;
+}
 
 
 1;
@@ -44,6 +74,23 @@ the documentation. Patches welcome.
 This set of classes uses the Google Chart API - see
 L<http://code.google.com/apis/chart/> - to draw charts.
 
+=head1 METHODS
+
+=over 4
+
+=item new
+
+    my $obj = Google::Chart::Base->new;
+    my $obj = Google::Chart::Base->new(%args);
+
+Creates and returns a new object. The constructor will accept as arguments a
+list of pairs, from component name to initial value. For each pair, the named
+component is initialized by calling the method of the same name with the given
+value. If called with a single hash reference, it is dereferenced and its
+key/value pairs are set as described before.
+
+=back
+
 Google::Chart::Base inherits from L<Class::Accessor::Complex>,
 L<Class::Accessor::Constructor>, L<Class::Accessor::FactoryTyped>, and
 L<Class::Accessor::Constructor::Base>.
@@ -51,8 +98,7 @@ L<Class::Accessor::Constructor::Base>.
 The superclass L<Class::Accessor::Complex> defines these methods and
 functions:
 
-    carp(), cluck(), croak(), flatten(), mk_abstract_accessors(),
-    mk_array_accessors(), mk_boolean_accessors(),
+    mk_abstract_accessors(), mk_array_accessors(), mk_boolean_accessors(),
     mk_class_array_accessors(), mk_class_hash_accessors(),
     mk_class_scalar_accessors(), mk_concat_accessors(),
     mk_forward_accessors(), mk_hash_accessors(), mk_integer_accessors(),
@@ -70,13 +116,13 @@ The superclass L<Class::Accessor> defines these methods and functions:
 The superclass L<Class::Accessor::Installer> defines these methods and
 functions:
 
-    install_accessor(), subname()
+    install_accessor()
 
 The superclass L<Class::Accessor::Constructor> defines these methods and
 functions:
 
-    NO_DIRTY(), WITH_DIRTY(), _make_constructor(), mk_constructor(),
-    mk_constructor_with_dirty(), mk_singleton_constructor()
+    _make_constructor(), mk_constructor(), mk_constructor_with_dirty(),
+    mk_singleton_constructor()
 
 The superclass L<Data::Inherited> defines these methods and functions:
 
@@ -106,8 +152,7 @@ functions:
     pop_factory_typed_accessors(), pop_factory_typed_array_accessors(),
     push_factory_typed_accessors(), push_factory_typed_array_accessors(),
     set_factory_typed_accessors(), set_factory_typed_array_accessors(),
-    set_push(), shift_factory_typed_accessors(),
-    shift_factory_typed_array_accessors(),
+    shift_factory_typed_accessors(), shift_factory_typed_array_accessors(),
     splice_factory_typed_accessors(),
     splice_factory_typed_array_accessors(),
     unshift_factory_typed_accessors(),
@@ -116,10 +161,10 @@ functions:
 The superclass L<Class::Accessor::Constructor::Base> defines these methods
 and functions:
 
-    HYGIENIC(), STORE(), clear_dirty(), clear_hygienic(),
-    clear_unhygienic(), contains_hygienic(), contains_unhygienic(),
-    delete_hygienic(), delete_unhygienic(), dirty(), dirty_clear(),
-    dirty_set(), elements_hygienic(), elements_unhygienic(), hygienic(),
+    STORE(), clear_dirty(), clear_hygienic(), clear_unhygienic(),
+    contains_hygienic(), contains_unhygienic(), delete_hygienic(),
+    delete_unhygienic(), dirty(), dirty_clear(), dirty_set(),
+    elements_hygienic(), elements_unhygienic(), hygienic(),
     hygienic_clear(), hygienic_contains(), hygienic_delete(),
     hygienic_elements(), hygienic_insert(), hygienic_is_empty(),
     hygienic_size(), insert_hygienic(), insert_unhygienic(),
@@ -133,23 +178,6 @@ The superclass L<Tie::StdHash> defines these methods and functions:
     CLEAR(), DELETE(), EXISTS(), FETCH(), FIRSTKEY(), NEXTKEY(), SCALAR(),
     TIEHASH()
 
-=head1 METHODS
-
-=over 4
-
-=item new
-
-    my $obj = Google::Chart::Base->new;
-    my $obj = Google::Chart::Base->new(%args);
-
-Creates and returns a new object. The constructor will accept as arguments a
-list of pairs, from component name to initial value. For each pair, the named
-component is initialized by calling the method of the same name with the given
-value. If called with a single hash reference, it is dereferenced and its
-key/value pairs are set as described before.
-
-=back
-
 =head1 TAGS
 
 If you talk about this module in blogs, on del.icio.us or anywhere else,
@@ -157,7 +185,7 @@ please use the C<googlechart> tag.
 
 =head1 VERSION 
                    
-This document describes version 0.01 of L<Google::Chart::Base>.
+This document describes version 0.02 of L<Google::Chart::Base>.
 
 =head1 BUGS AND LIMITATIONS
 

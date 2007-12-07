@@ -4,22 +4,31 @@ use warnings;
 use strict;
 
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 
 use base qw(Class::Factory::Enhanced);
 
 
 __PACKAGE__->register_factory_type(
+    color                  => 'Google::Chart::Color',
+    color_data             => 'Google::Chart::Color::Data',
     data                   => 'Google::Chart::Data',
     data_simple_encoding   => 'Google::Chart::Data::SimpleEncoding',
     # data_text_encoding     => 'Google::Chart::Data::TextEncoding',
     # data_extended_encoding => 'Google::Chart::Data::ExtendedEncoding',
     size                   => 'Google::Chart::Size',
     type                   => 'Google::Chart::Type',
-    type_line              => 'Google::Chart::Type::Line',
+    type_line              => 'Google::Chart::Type::Line::LineX',
+    type_line_xy           => 'Google::Chart::Type::Line::LineXY',
+    type_bar_hor_stacked   => 'Google::Chart::Type::Bar::HorizontalStacked',
+    type_bar_vert_stacked  => 'Google::Chart::Type::Bar::VerticalStacked',
+    type_bar_hor_grouped   => 'Google::Chart::Type::Bar::HorizontalGrouped',
+    type_bar_vert_grouped  => 'Google::Chart::Type::Bar::VerticalGrouped',
     type_pie_2d            => 'Google::Chart::Type::Pie::TwoDimensional',
     type_pie_3d            => 'Google::Chart::Type::Pie::ThreeDimensional',
+    type_venn              => 'Google::Chart::Type::Venn',
+    type_scatter_plot      => 'Google::Chart::Type::ScatterPlot',
 );
 
 
@@ -65,14 +74,6 @@ The superclass L<Class::Factory> defines these methods and functions:
     get_registered_classes(), get_registered_types(), init(),
     remove_factory_type(), unregister_factory_type()
 
-=head1 METHODS
-
-=over 4
-
-
-
-=back
-
 =head1 TAGS
 
 If you talk about this module in blogs, on del.icio.us or anywhere else,
@@ -80,7 +81,7 @@ please use the C<googlechart> tag.
 
 =head1 VERSION 
                    
-This document describes version 0.01 of L<Google::Chart::Factory>.
+This document describes version 0.02 of L<Google::Chart::Factory>.
 
 =head1 BUGS AND LIMITATIONS
 

@@ -1,4 +1,4 @@
-package Google::Chart::Type::Pie;
+package Google::Chart::Color::Data;
 
 use strict;
 use warnings;
@@ -7,7 +7,25 @@ use warnings;
 our $VERSION = '0.02';
 
 
-use base qw(Google::Chart::Type);
+use base qw(Google::Chart::Base);
+
+
+__PACKAGE__
+    ->mk_factory_typed_array_accessors('Google::Chart::Factory',
+        color => 'colors',
+    ); 
+
+
+sub has_content {
+    my $self = shift;
+    $self->colors_count;
+}
+
+
+sub as_string {
+    my $self = shift;
+    'chco=' . join ',' => map { $_->hex } $self->colors;
+}
 
 
 1;
@@ -19,11 +37,11 @@ __END__
 
 =head1 NAME
 
-Google::Chart::Type::Pie - Draw a chart with Google Chart
+Google::Chart::Color::Data - Draw a chart with Google Chart
 
 =head1 SYNOPSIS
 
-    Google::Chart::Type::Pie->new;
+    Google::Chart::Color::Data->new;
 
 =head1 WARNING
 
@@ -37,7 +55,7 @@ the documentation. Patches welcome.
 This set of classes uses the Google Chart API - see
 L<http://code.google.com/apis/chart/> - to draw charts.
 
-Google::Chart::Type::Pie inherits from L<Google::Chart::Type>.
+Google::Chart::Color::Data inherits from L<Google::Chart::Base>.
 
 The superclass L<Google::Chart::Base> defines these methods and functions:
 
@@ -133,7 +151,7 @@ please use the C<googlechart> tag.
 
 =head1 VERSION 
                    
-This document describes version 0.02 of L<Google::Chart::Type::Pie>.
+This document describes version 0.02 of L<Google::Chart::Color::Data>.
 
 =head1 BUGS AND LIMITATIONS
 

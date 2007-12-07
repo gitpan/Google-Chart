@@ -4,10 +4,10 @@ use strict;
 use warnings;
 
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 
-use base qw(Google::Chart::Type);
+use base qw(Google::Chart::Type::Pie);
 
 
 use constant as_string => 'cht=p';
@@ -41,17 +41,16 @@ This set of classes uses the Google Chart API - see
 L<http://code.google.com/apis/chart/> - to draw charts.
 
 Google::Chart::Type::Pie::TwoDimensional inherits from
-L<Google::Chart::Type>.
+L<Google::Chart::Type::Pie>.
 
 The superclass L<Google::Chart::Base> defines these methods and functions:
 
-    new()
+    new(), is_number(), validate()
 
 The superclass L<Class::Accessor::Complex> defines these methods and
 functions:
 
-    carp(), cluck(), croak(), flatten(), mk_abstract_accessors(),
-    mk_array_accessors(), mk_boolean_accessors(),
+    mk_abstract_accessors(), mk_array_accessors(), mk_boolean_accessors(),
     mk_class_array_accessors(), mk_class_hash_accessors(),
     mk_class_scalar_accessors(), mk_concat_accessors(),
     mk_forward_accessors(), mk_hash_accessors(), mk_integer_accessors(),
@@ -69,13 +68,13 @@ The superclass L<Class::Accessor> defines these methods and functions:
 The superclass L<Class::Accessor::Installer> defines these methods and
 functions:
 
-    install_accessor(), subname()
+    install_accessor()
 
 The superclass L<Class::Accessor::Constructor> defines these methods and
 functions:
 
-    NO_DIRTY(), WITH_DIRTY(), _make_constructor(), mk_constructor(),
-    mk_constructor_with_dirty(), mk_singleton_constructor()
+    _make_constructor(), mk_constructor(), mk_constructor_with_dirty(),
+    mk_singleton_constructor()
 
 The superclass L<Data::Inherited> defines these methods and functions:
 
@@ -105,8 +104,7 @@ functions:
     pop_factory_typed_accessors(), pop_factory_typed_array_accessors(),
     push_factory_typed_accessors(), push_factory_typed_array_accessors(),
     set_factory_typed_accessors(), set_factory_typed_array_accessors(),
-    set_push(), shift_factory_typed_accessors(),
-    shift_factory_typed_array_accessors(),
+    shift_factory_typed_accessors(), shift_factory_typed_array_accessors(),
     splice_factory_typed_accessors(),
     splice_factory_typed_array_accessors(),
     unshift_factory_typed_accessors(),
@@ -115,10 +113,10 @@ functions:
 The superclass L<Class::Accessor::Constructor::Base> defines these methods
 and functions:
 
-    HYGIENIC(), STORE(), clear_dirty(), clear_hygienic(),
-    clear_unhygienic(), contains_hygienic(), contains_unhygienic(),
-    delete_hygienic(), delete_unhygienic(), dirty(), dirty_clear(),
-    dirty_set(), elements_hygienic(), elements_unhygienic(), hygienic(),
+    STORE(), clear_dirty(), clear_hygienic(), clear_unhygienic(),
+    contains_hygienic(), contains_unhygienic(), delete_hygienic(),
+    delete_unhygienic(), dirty(), dirty_clear(), dirty_set(),
+    elements_hygienic(), elements_unhygienic(), hygienic(),
     hygienic_clear(), hygienic_contains(), hygienic_delete(),
     hygienic_elements(), hygienic_insert(), hygienic_is_empty(),
     hygienic_size(), insert_hygienic(), insert_unhygienic(),
@@ -132,14 +130,6 @@ The superclass L<Tie::StdHash> defines these methods and functions:
     CLEAR(), DELETE(), EXISTS(), FETCH(), FIRSTKEY(), NEXTKEY(), SCALAR(),
     TIEHASH()
 
-=head1 METHODS
-
-=over 4
-
-
-
-=back
-
 =head1 TAGS
 
 If you talk about this module in blogs, on del.icio.us or anywhere else,
@@ -147,7 +137,7 @@ please use the C<googlechart> tag.
 
 =head1 VERSION 
                    
-This document describes version 0.01 of L<Google::Chart::Type::Pie::TwoDimensional>.
+This document describes version 0.02 of L<Google::Chart::Type::Pie::TwoDimensional>.
 
 =head1 BUGS AND LIMITATIONS
 

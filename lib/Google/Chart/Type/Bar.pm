@@ -1,4 +1,4 @@
-package Google::Chart::Type::Pie;
+package Google::Chart::Type::Bar;
 
 use strict;
 use warnings;
@@ -19,11 +19,11 @@ __END__
 
 =head1 NAME
 
-Google::Chart::Type::Pie - Draw a chart with Google Chart
+Google::Chart::Type::Bar - Draw a chart with Google Chart
 
 =head1 SYNOPSIS
 
-    Google::Chart::Type::Pie->new;
+    Google::Chart::Type::Bar->new;
 
 =head1 WARNING
 
@@ -37,7 +37,7 @@ the documentation. Patches welcome.
 This set of classes uses the Google Chart API - see
 L<http://code.google.com/apis/chart/> - to draw charts.
 
-Google::Chart::Type::Pie inherits from L<Google::Chart::Type>.
+Google::Chart::Type::Bar inherits from L<Google::Chart::Type>.
 
 The superclass L<Google::Chart::Base> defines these methods and functions:
 
@@ -133,7 +133,7 @@ please use the C<googlechart> tag.
 
 =head1 VERSION 
                    
-This document describes version 0.02 of L<Google::Chart::Type::Pie>.
+This document describes version 0.02 of L<Google::Chart::Type::Bar>.
 
 =head1 BUGS AND LIMITATIONS
 
