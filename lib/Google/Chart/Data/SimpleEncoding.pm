@@ -5,7 +5,7 @@ use warnings;
 use Data::Dumper;
 
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 
 use base qw(Google::Chart::Data);
@@ -176,7 +176,7 @@ please use the C<googlechart> tag.
 
 =head1 VERSION 
                    
-This document describes version 0.02 of L<Google::Chart::Data::SimpleEncoding>.
+This document describes version 0.03 of L<Google::Chart::Data::SimpleEncoding>.
 
 =head1 BUGS AND LIMITATIONS
 

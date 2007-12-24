@@ -5,7 +5,7 @@ use warnings;
 use LWP::UserAgent;
 
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 
 use base qw(
@@ -15,13 +15,18 @@ use base qw(
 
 
 __PACKAGE__
-    ->mk_scalar_accessors(qw(title))
+    ->mk_scalar_accessors(qw(title ua))
     ->mk_factory_typed_accessors('Google::Chart::Factory',
         data       => 'data',
         type       => 'type',
         size       => 'size',
         color_data => 'color_data',
     );
+
+
+use constant DEFAULTS => (
+    ua => LWP::UserAgent->new,
+);
 
 
 use constant API_URI => 'http://chart.apis.google.com/chart?';
@@ -100,11 +105,10 @@ sub img_tag {
     qq{<IMG SRC="$url" />};
 }
 
+
 sub render {
     my $self = shift;
-    my $ua = LWP::UserAgent->new;
-
-    my $response = $ua->get($self->get_url);
+    my $response = $self->ua->get($self->get_url);
 
     if ($response->is_success) {
         return $response->content;
@@ -176,6 +180,12 @@ L<http://code.google.com/apis/chart/> - to draw charts.
 
 Clears the value.
 
+=item clear_ua
+
+    $obj->clear_ua;
+
+Clears the value.
+
 =item title
 
     my $value = $obj->title;
@@ -187,6 +197,20 @@ value. If called with a single argument, it sets the value.
 =item title_clear
 
     $obj->title_clear;
+
+Clears the value.
+
+=item ua
+
+    my $value = $obj->ua;
+    $obj->ua($value);
+
+A basic getter/setter method. If called without an argument, it returns the
+value. If called with a single argument, it sets the value.
+
+=item ua_clear
+
+    $obj->ua_clear;
 
 Clears the value.
 
@@ -302,7 +326,7 @@ please use the C<googlechart> tag.
 
 =head1 VERSION 
                    
-This document describes version 0.02 of L<Google::Chart>.
+This document describes version 0.03 of L<Google::Chart>.
 
 =head1 BUGS AND LIMITATIONS
 

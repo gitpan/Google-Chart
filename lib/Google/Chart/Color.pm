@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 
 use base qw(Google::Chart::Base);
@@ -339,7 +339,7 @@ please use the C<googlechart> tag.
 
 =head1 VERSION 
                    
-This document describes version 0.02 of L<Google::Chart::Color>.
+This document describes version 0.03 of L<Google::Chart::Color>.
 
 =head1 BUGS AND LIMITATIONS
 
