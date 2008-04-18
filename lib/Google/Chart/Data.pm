@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 
 use base qw(Google::Chart::Base);
@@ -16,6 +16,9 @@ __PACKAGE__
     ->mk_abstract_accessors(qw(encode_value_set));
 
 
+use constant ENCODING_TYPE_VALUE => '?';   # override in subclasses
+
+
 sub has_content {
     my $self = shift;
     $self->value_sets_count;
@@ -24,7 +27,8 @@ sub has_content {
 
 sub as_string {
     my $self = shift;
-    sprintf 'chd=s:%s',
+    sprintf 'chd=%s:%s',
+        $self->ENCODING_TYPE_VALUE,
         join ',' =>
         map { $self->encode_value_set($_) }
         $self->value_sets;
@@ -342,7 +346,7 @@ please use the C<googlechart> tag.
 
 =head1 VERSION 
                    
-This document describes version 0.03 of L<Google::Chart::Data>.
+This document describes version 0.04 of L<Google::Chart::Data>.
 
 =head1 BUGS AND LIMITATIONS
 
@@ -362,13 +366,13 @@ The latest version of this module is available from the Comprehensive Perl
 Archive Network (CPAN). Visit <http://www.perl.com/CPAN/> to find a CPAN
 site near you. Or see <http://www.perl.com/CPAN/authors/id/M/MA/MARCEL/>.
 
-=head1 AUTHOR
+=head1 AUTHORS
 
 Marcel GrE<uuml>nauer, C<< <marcel@cpan.org> >>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2007 by Marcel GrE<uuml>nauer
+Copyright 2007-2008 by the authors.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.

@@ -2,13 +2,15 @@ package Google::Chart::Data::SimpleEncoding;
 
 use strict;
 use warnings;
-use Data::Dumper;
 
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 
 use base qw(Google::Chart::Data);
+
+
+use constant ENCODING_TYPE_VALUE => 's';
 
 
 sub encode_value_set {
@@ -176,7 +178,7 @@ please use the C<googlechart> tag.
 
 =head1 VERSION 
                    
-This document describes version 0.03 of L<Google::Chart::Data::SimpleEncoding>.
+This document describes version 0.04 of L<Google::Chart::Data::SimpleEncoding>.
 
 =head1 BUGS AND LIMITATIONS
 
@@ -196,13 +198,13 @@ The latest version of this module is available from the Comprehensive Perl
 Archive Network (CPAN). Visit <http://www.perl.com/CPAN/> to find a CPAN
 site near you. Or see <http://www.perl.com/CPAN/authors/id/M/MA/MARCEL/>.
 
-=head1 AUTHOR
+=head1 AUTHORS
 
 Marcel GrE<uuml>nauer, C<< <marcel@cpan.org> >>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2007 by Marcel GrE<uuml>nauer
+Copyright 2007-2008 by the authors.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
