@@ -1,114 +1,102 @@
+# $Id: /mirror/coderepos/lang/perl/Google-Chart/branches/moose/lib/Google/Chart.pm 66693 2008-07-24T07:52:09.748568Z daisuke  $
+
 package Google::Chart;
-
-use strict;
-use warnings;
+use Moose;
+use Google::Chart::Axis;
+use Google::Chart::Data;
+use Google::Chart::Size;
+use Google::Chart::Type;
+use Google::Chart::Types;
 use LWP::UserAgent;
+use URI;
+use overload
+    '""' => \&as_uri,
+    fallback => 1,
+;
+our $USER_AGENT;
 
+use constant BASE_URI => URI->new("http://chart.apis.google.com/chart");
 
-our $VERSION = '0.04';
+our $VERSION   = '0.05000';
+our $AUTHORITY = 'cpan:DMAKI';
 
-
-use base qw(
-    Google::Chart::Base
-    Google::Chart::Factory
+has 'type' => (
+    is       => 'rw',
+    does     => 'Google::Chart::Type',
+    coerce   => 1,
+    required => 1,
 );
 
-
-__PACKAGE__
-    ->mk_scalar_accessors(qw(title ua))
-    ->mk_factory_typed_accessors('Google::Chart::Factory',
-        data       => 'data',
-        type       => 'type',
-        size       => 'size',
-        color_data => 'color_data',
-    );
-
-
-use constant DEFAULTS => (
-    ua => LWP::UserAgent->new,
+has 'data' => (
+    is       => 'rw',
+    does     => 'Google::Chart::Data',
+    coerce   => 1,
 );
 
+has 'size' => (
+    is       => 'rw',
+    isa      => 'Google::Chart::Size',
+    coerce   => 1,
+    required => 1,
+    lazy     => 1,
+    default  => sub { Google::Chart::Size->new( width => 400, height => 300 ) },
+);
 
-use constant API_URI => 'http://chart.apis.google.com/chart?';
+has 'marker' => (
+    is       => 'rw',
+    isa      => 'Google::Chart::Marker',
+    coerce   => 1,
+);
 
+has 'axis' => (
+    is       => 'rw',
+    isa      => 'Google::Chart::Axis',
+    coerce   => 1,
+);
 
-sub make_obj {
+has 'ua' => (
+    is       => 'rw',
+    isa      => 'LWP::UserAgent',
+    required => 1,
+    lazy     => 1,
+    default  => sub { $USER_AGENT ||= LWP::UserAgent->new() }
+);
+
+__PACKAGE__->meta->make_immutable;
+
+no Moose;
+
+# XXX 
+# We need a trigger function that gets called whenever a component
+# is set, so we can validate if the combination of components are
+# actually feasible.
+
+sub as_uri {
     my $self = shift;
-    Google::Chart::Factory->make_object_for_type(@_);
-}
 
-
-# Convenience methods for using underlying objects
-
-sub set_size {
-    my $self = shift;
-    my ($x, $y);
-    if (@_ == 1 && ref $_[0] eq 'ARRAY') {
-        ($x, $y) = @{ $_[0] };
-    } else {
-        ($x, $y) = @_;
+    my %query;
+    foreach my $c qw( type data size marker axis ) {
+        my $component = $self->$c;
+        next unless $component;
+        my @params = $component->as_query;
+        while (@params) {
+            my ($name, $value) = splice(@params, 0, 2);
+            next unless length $value;
+            $query{$name} = $value;
+        }
     }
-    $self->size->x($x);
-    $self->size->y($y);
+
+    # If in case you want to change this for debugging or whatever...
+    my $uri = $ENV{GOOGLE_CHART_URI} ? 
+        URI->new($ENV{GOOGLE_CHART_URI}) :
+        BASE_URI->clone;
+    $uri->query_form( %query );
+    return $uri;
 }
-
-
-sub type_name {
-    my ($self, $type_name, @args) = @_;
-    $self->type($self->make_obj($type_name, @args));
-}
-
-
-sub data_spec {
-    my ($self, $args) = @_;
-    die "data_spec has no 'encoding' key\n" unless $args->{encoding};
-    my $encoding = delete $args->{encoding};
-    $self->data($self->make_obj($encoding, %$args));
-}
-
-
-sub colors {
-    my ($self, @args) = @_;
-    @args =
-        map { $self->make_obj('color')->guess($_) }
-        @args;
-    $self->color_data(colors => \@args);
-}
-
-
-# End of convenience methods
-
-
-sub validate {
-    my $self = shift;
-    my @error = map { $self->$_->validate } qw(
-        size type data color_data
-    );
-    die join "\n" => @error if @error;
-}
-
-
-sub get_url {
-    my $self = shift;
-    my $url = $self->API_URI .
-        join '&' =>
-        map { $self->$_->as_string }
-        grep { $self->$_->has_content }
-        qw(size data type color_data);
-}
-
-
-sub img_tag {
-    my $self = shift;
-    my $url = $self->get_url;
-    $url =~ s/&/&amp;/g;
-    qq{<IMG SRC="$url" />};
-}
-
 
 sub render {
     my $self = shift;
-    my $response = $self->ua->get($self->get_url);
+    my $response = $self->ua->get($self->as_uri);
 
     if ($response->is_success) {
         return $response->content;
@@ -116,7 +104,6 @@ sub render {
         die $response->status_line;
     }
 }
-
 
 sub render_to_file {
     my ($self, $filename) = @_;
@@ -126,237 +113,129 @@ sub render_to_file {
     close $fh or die "can't close $filename: $!\n";
 }
 
-
 1;
-
 
 __END__
 
-
-
 =head1 NAME
 
-Google::Chart - Draw a chart with Google Chart
+Google::Chart - Interface to Google Charts API
 
 =head1 SYNOPSIS
 
-    use Google::Chart;
-    
-    my $chart = Google::Chart->new(
-        type_name => 'type_pie_3d',
-        set_size  => [ 300, 100 ],
-        data_spec => {
-            encoding  => 'data_simple_encoding',
-            max_value => 100,
-            value_sets => [ [ map { $_ * 10 } 0..10 ] ],
-        },
-    );
+  use Google::Chart;
 
-    print $chart->get_url;
-    $chart->render_to_file('my_chart.png');
+  my $chart = Google::Chart->new(
+    type => "Bar",
+    data => [ 1, 2, 3, 4, 5 ]
+  );
 
-=head1 WARNING
+  print $chart->as_uri, "\n"; # or simply print $chart, "\n"
 
-This is a very early alpha release. It is more a proof of concept, but for
-very simple cases it already works. Documentation and more complete support of
-the Google Chart API will follow shortly. For now, the code more or less is
-the documentation. Patches welcome.
-
-I've neverthless released the distribution, in the I<spirit of one-point-oh>,
-as Douglas Coupland puts it, or rather, in the spirit of point-oh-one.
-
-=head1 DESCRIPTION
-
-This set of classes uses the Google Chart API - see
-L<http://code.google.com/apis/chart/> - to draw charts.
+  $chart->render_to_file( filename => 'filename.png' );
 
 =head1 METHODS
 
+=head2 new(%args)
+
 =over 4
 
-=item clear_title
+=item type
 
-    $obj->clear_title;
+Specifies the chart type, such as line, bar, pie, etc. If given a string like
+'Bar', it will instantiate an instance of Google::Chart::Type::Bar by
+invoking argument-less constructor.
 
-Clears the value.
+If you want to pass parameters to the constructor, either pass in an
+already instanstiated object, or pass in a hash, which will be coerced to
+the appropriate object
 
-=item clear_ua
+  my $chart = Google::Chart->new(
+    type => {
+      module => "Bar",
+      args   => {
+        orientation => "horizontal"
+      }
+    }
+  );
 
-    $obj->clear_ua;
+=item size
 
-Clears the value.
+Specifies the chart size. Strings like "400x300", hash references, or already
+instantiated objects can be used:
 
-=item title
+  my $chart = Google::Chart->new(
+    size => "400x300",
+  );
 
-    my $value = $obj->title;
-    $obj->title($value);
+  my $chart = Google::Chart->new(
+    size => {
+      width => 400,
+      height => 300
+    }
+  );
 
-A basic getter/setter method. If called without an argument, it returns the
-value. If called with a single argument, it sets the value.
+=item marker
 
-=item title_clear
+Specifies the markers that go on line charts.
 
-    $obj->title_clear;
+=item axis
 
-Clears the value.
-
-=item ua
-
-    my $value = $obj->ua;
-    $obj->ua($value);
-
-A basic getter/setter method. If called without an argument, it returns the
-value. If called with a single argument, it sets the value.
-
-=item ua_clear
-
-    $obj->ua_clear;
-
-Clears the value.
+Specifies the axis labels and such that go on line and bar charts
 
 =back
 
-Google::Chart inherits from L<Google::Chart::Base> and
-L<Google::Chart::Factory>.
+=head2 as_uri()
 
-The superclass L<Google::Chart::Base> defines these methods and functions:
+Returns the URI that represents the chart object.
 
-    new(), is_number()
+=head2 render()
 
-The superclass L<Class::Accessor::Complex> defines these methods and
-functions:
+Generates the chart image, and returns the contents.
 
-    mk_abstract_accessors(), mk_array_accessors(), mk_boolean_accessors(),
-    mk_class_array_accessors(), mk_class_hash_accessors(),
-    mk_class_scalar_accessors(), mk_concat_accessors(),
-    mk_forward_accessors(), mk_hash_accessors(), mk_integer_accessors(),
-    mk_new(), mk_object_accessors(), mk_scalar_accessors(),
-    mk_set_accessors(), mk_singleton()
+=head2 render_to_file( %args )
 
-The superclass L<Class::Accessor> defines these methods and functions:
+Generates the chart, and writes the contents out to the file specified by
+`filename' parameter
 
-    _carp(), _croak(), _mk_accessors(), accessor_name_for(),
-    best_practice_accessor_name_for(), best_practice_mutator_name_for(),
-    follow_best_practice(), get(), make_accessor(), make_ro_accessor(),
-    make_wo_accessor(), mk_accessors(), mk_ro_accessors(),
-    mk_wo_accessors(), mutator_name_for(), set()
+=head1 FEEDBACK
 
-The superclass L<Class::Accessor::Installer> defines these methods and
-functions:
+We don't believe that we fully utilize Google Chart's abilities. So there
+might be things missing, things that should be changed for easier use.
+If you find any such case, PLEASE LET US KNOW! Suggestions are welcome, but
+code snippets, pseudocode, or even better, test cases, are most welcome.
 
-    install_accessor()
+=head1 TODO
 
-The superclass L<Class::Accessor::Constructor> defines these methods and
-functions:
+=over 4
 
-    _make_constructor(), mk_constructor(), mk_constructor_with_dirty(),
-    mk_singleton_constructor()
+=item Standardize Interface
 
-The superclass L<Data::Inherited> defines these methods and functions:
+Objects need to expect data in a standard format. This is not the case yet.
+(comments welcome)
 
-    every_hash(), every_list(), flush_every_cache_by_key()
+=item Adding New Components Is Cumbersome
 
-The superclass L<Class::Accessor::FactoryTyped> defines these methods and
-functions:
+There must be an easy way to just plug it in.
 
-    clear_factory_typed_accessors(), clear_factory_typed_array_accessors(),
-    count_factory_typed_accessors(), count_factory_typed_array_accessors(),
-    factory_typed_accessors(), factory_typed_accessors_clear(),
-    factory_typed_accessors_count(), factory_typed_accessors_index(),
-    factory_typed_accessors_pop(), factory_typed_accessors_push(),
-    factory_typed_accessors_set(), factory_typed_accessors_shift(),
-    factory_typed_accessors_splice(), factory_typed_accessors_unshift(),
-    factory_typed_array_accessors(), factory_typed_array_accessors_clear(),
-    factory_typed_array_accessors_count(),
-    factory_typed_array_accessors_index(),
-    factory_typed_array_accessors_pop(),
-    factory_typed_array_accessors_push(),
-    factory_typed_array_accessors_set(),
-    factory_typed_array_accessors_shift(),
-    factory_typed_array_accessors_splice(),
-    factory_typed_array_accessors_unshift(),
-    index_factory_typed_accessors(), index_factory_typed_array_accessors(),
-    mk_factory_typed_accessors(), mk_factory_typed_array_accessors(),
-    pop_factory_typed_accessors(), pop_factory_typed_array_accessors(),
-    push_factory_typed_accessors(), push_factory_typed_array_accessors(),
-    set_factory_typed_accessors(), set_factory_typed_array_accessors(),
-    shift_factory_typed_accessors(), shift_factory_typed_array_accessors(),
-    splice_factory_typed_accessors(),
-    splice_factory_typed_array_accessors(),
-    unshift_factory_typed_accessors(),
-    unshift_factory_typed_array_accessors()
+=item Moose-ish Errors
 
-The superclass L<Class::Accessor::Constructor::Base> defines these methods
-and functions:
+I've been reported that some Moose-related errors occur on certain platforms.
+I have not been able to reproduce it myself, so if you do, please let me
+know.
 
-    STORE(), clear_dirty(), clear_hygienic(), clear_unhygienic(),
-    contains_hygienic(), contains_unhygienic(), delete_hygienic(),
-    delete_unhygienic(), dirty(), dirty_clear(), dirty_set(),
-    elements_hygienic(), elements_unhygienic(), hygienic(),
-    hygienic_clear(), hygienic_contains(), hygienic_delete(),
-    hygienic_elements(), hygienic_insert(), hygienic_is_empty(),
-    hygienic_size(), insert_hygienic(), insert_unhygienic(),
-    is_empty_hygienic(), is_empty_unhygienic(), set_dirty(),
-    size_hygienic(), size_unhygienic(), unhygienic(), unhygienic_clear(),
-    unhygienic_contains(), unhygienic_delete(), unhygienic_elements(),
-    unhygienic_insert(), unhygienic_is_empty(), unhygienic_size()
-
-The superclass L<Tie::StdHash> defines these methods and functions:
-
-    CLEAR(), DELETE(), EXISTS(), FETCH(), FIRSTKEY(), NEXTKEY(), SCALAR(),
-    TIEHASH()
-
-The superclass L<Class::Factory::Enhanced> defines these methods and
-functions:
-
-    add_factory_type(), make_object_for_type(), register_factory_type()
-
-The superclass L<Class::Factory> defines these methods and functions:
-
-    factory_error(), factory_log(), get_factory_class(),
-    get_factory_type_for(), get_loaded_classes(), get_loaded_types(),
-    get_my_factory(), get_my_factory_type(), get_registered_class(),
-    get_registered_classes(), get_registered_types(), init(),
-    remove_factory_type(), unregister_factory_type()
-
-=head1 TAGS
-
-If you talk about this module in blogs, on del.icio.us or anywhere else,
-please use the C<googlechart> tag.
-
-=head1 VERSION 
-                   
-This document describes version 0.04 of L<Google::Chart>.
-
-=head1 BUGS AND LIMITATIONS
-
-No bugs have been reported.
-
-Please report any bugs or feature requests to
-C<<bug-google-chart@rt.cpan.org>>, or through the web interface at
-L<http://rt.cpan.org>.
-
-=head1 INSTALLATION
-
-See perlmodinstall for information and options on installing Perl modules.
-
-=head1 AVAILABILITY
-
-The latest version of this module is available from the Comprehensive Perl
-Archive Network (CPAN). Visit <http://www.perl.com/CPAN/> to find a CPAN
-site near you. Or see <http://www.perl.com/CPAN/authors/id/M/MA/MARCEL/>.
+=back
 
 =head1 AUTHORS
 
-Marcel GrE<uuml>nauer, C<< <marcel@cpan.org> >>
+Daisuke Maki C<< <daisuke@endeworks.jp> >> (current maintainer)
 
-=head1 COPYRIGHT AND LICENSE
+Marcel Grünauer C<< <marcel@cpan.org> >> (original author)
 
-Copyright 2007-2008 by the authors.
+=head1 LICENSE
 
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself.
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
 
-
+See http://www.perl.com/perl/misc/Artistic.html
 =cut
-

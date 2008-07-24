@@ -1,0 +1,51 @@
+# $Id: /mirror/coderepos/lang/perl/Google-Chart/branches/moose/lib/Google/Chart/Title.pm 66681 2008-07-24T05:52:01.937141Z daisuke  $
+
+package Google::Chart::Title;
+use Moose;
+use Google::Chart::Types;
+
+with 'Google::Chart::QueryComponent';
+
+has 'text' => (
+    is => 'rw',
+    isa => 'Str',
+    required => 1,
+);
+
+has 'color' => (
+    is => 'rw',
+    isa => 'Google::Chart::Color',
+);
+
+has 'fontsize' => (
+    is => 'rw',
+    isa => 'Num'
+);
+
+__PACKAGE__->meta->make_immutable;
+
+no Moose;
+
+sub as_query {
+    my $self = shift;
+
+    my $text = $self->title;
+    $text =~ s/\r?\n/|/gsm;
+    my %data = (
+        chtt => $text
+    );
+
+    my $color = $self->color;
+    my $fontsize = $self->fontsize;
+    if (defined $color || defined $fontsize) {
+        $data{chts} = join(',', 
+            defined $color ? $color : '',
+            defined $fontsize ? $fontsize : ''
+        );
+    }
+
+    return wantarray ? %data : 
+        join('&', map { "$_=$data{$_}" } keys %data );
+}
+
+1;
