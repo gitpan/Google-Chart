@@ -1,4 +1,4 @@
-# $Id: /mirror/coderepos/lang/perl/Google-Chart/branches/moose/lib/Google/Chart/Types.pm 66666 2008-07-24T01:59:15.912086Z daisuke  $
+# $Id: /mirror/coderepos/lang/perl/Google-Chart/branches/moose/lib/Google/Chart/Types.pm 66975 2008-07-25T07:13:14.026258Z daisuke  $
 
 package Google::Chart::Types;
 use Moose;
@@ -46,6 +46,23 @@ sub hash_coercion {
     coerce 'Google::Chart::Type'
         => from 'HashRef'
         => hash_coercion(prefix => "Google::Chart::Type")
+    ;
+}
+
+{
+    role_type 'Google::Chart::Fill';
+    coerce 'Google::Chart::Fill'
+        => from 'Str'
+        => via {
+            my $class = sprintf( 'Google::Chart::Fill::%s', ucfirst $_ );
+            Class::MOP::load_class($class);
+
+            return $class->new();
+        }
+    ;
+    coerce 'Google::Chart::Fill'
+        => from 'HashRef'
+        => hash_coercion(prefix => "Google::Chart::Fill")
     ;
 }
 

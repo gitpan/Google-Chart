@@ -1,9 +1,11 @@
-# $Id: /mirror/coderepos/lang/perl/Google-Chart/branches/moose/lib/Google/Chart/Fill/LinearGradient.pm 66687 2008-07-24T06:18:24.102192Z daisuke  $
+# $Id: /mirror/coderepos/lang/perl/Google-Chart/branches/moose/lib/Google/Chart/Fill/LinearGradient.pm 66974 2008-07-25T07:12:29.139681Z daisuke  $
 
 package Google::Chart::Fill::LinearGradient;
 use Moose;
 use Moose::Util::TypeConstraints;
 use Google::Chart::Types;
+
+with 'Google::Chart::Fill';
 
 subtype 'Google::Chart::Fill::LinearGradient::Angle'
     => as 'Num'
@@ -20,12 +22,14 @@ subtype 'Google::Chart::Fill::LinearGradient::Offset'
 has 'target' => (
     is => 'rw',
     isa => enum([ qw(bc c) ]),
+    default => 'bc',
     required => 1,
 );
 
 has 'angle' => (
     is => 'rw',
     isa => 'Google::Chart::Fill::LinearGradient::Angle',
+    default => 0,
     required => 1
 );
 
@@ -38,6 +42,7 @@ has 'color' => (
 has 'offset' => (
     is => 'rw',
     isa => 'Google::Chart::Fill::LinearGradient::Offset',
+    default => 0,
     required => 1,
 );
 
@@ -52,3 +57,15 @@ sub parameter_value {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+Google::Chart::Fill::LinearGradient - Apply Gradient Fill
+
+=head1 METHODS
+
+=head2 parameter_value
+
+=cut

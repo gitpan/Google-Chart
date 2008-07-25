@@ -1,4 +1,4 @@
-# $Id: /mirror/coderepos/lang/perl/Google-Chart/branches/moose/lib/Google/Chart/Title.pm 66681 2008-07-24T05:52:01.937141Z daisuke  $
+# $Id: /mirror/coderepos/lang/perl/Google-Chart/branches/moose/lib/Google/Chart/Title.pm 66700 2008-07-24T09:37:48.241728Z daisuke  $
 
 package Google::Chart::Title;
 use Moose;
@@ -49,3 +49,15 @@ sub as_query {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+Google::Chart::Title - Apply Title 
+
+=head1 METHODS
+
+=head2 as_query
+
+=cut

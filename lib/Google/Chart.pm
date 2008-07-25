@@ -1,4 +1,4 @@
-# $Id: /mirror/coderepos/lang/perl/Google-Chart/branches/moose/lib/Google/Chart.pm 66693 2008-07-24T07:52:09.748568Z daisuke  $
+# $Id: /mirror/coderepos/lang/perl/Google-Chart/branches/moose/lib/Google/Chart.pm 66978 2008-07-25T07:15:08.563510Z daisuke  $
 
 package Google::Chart;
 use Moose;
@@ -20,39 +20,49 @@ use constant BASE_URI => URI->new("http://chart.apis.google.com/chart");
 our $VERSION   = '0.05000';
 our $AUTHORITY = 'cpan:DMAKI';
 
-has 'type' => (
-    is       => 'rw',
-    does     => 'Google::Chart::Type',
-    coerce   => 1,
-    required => 1,
+my %COMPONENTS = (
+    type => {
+        is => 'rw',
+        does => 'Google::Chart::Type',
+        coerce => 1,
+        required => 1,
+    },
+    data => {
+        is       => 'rw',
+        does     => 'Google::Chart::Data',
+        coerce   => 1,
+    },
+    size => {
+        is       => 'rw',
+        isa      => 'Google::Chart::Size',
+        coerce   => 1,
+        required => 1,
+        lazy     => 1,
+        default  => sub { Google::Chart::Size->new( width => 400, height => 300 ) },
+    },
+    marker => {
+        is       => 'rw',
+        isa      => 'Google::Chart::Marker',
+        coerce   => 1,
+    },
+    axis => {
+        is       => 'rw',
+        isa      => 'Google::Chart::Axis',
+        coerce   => 1,
+    },
+    fill => {
+        is       => 'rw',
+        does     => 'Google::Chart::Fill',
+        coerce   => 1
+    }
 );
+my @COMPONENTS = keys %COMPONENTS;
 
-has 'data' => (
-    is       => 'rw',
-    does     => 'Google::Chart::Data',
-    coerce   => 1,
-);
-
-has 'size' => (
-    is       => 'rw',
-    isa      => 'Google::Chart::Size',
-    coerce   => 1,
-    required => 1,
-    lazy     => 1,
-    default  => sub { Google::Chart::Size->new( width => 400, height => 300 ) },
-);
-
-has 'marker' => (
-    is       => 'rw',
-    isa      => 'Google::Chart::Marker',
-    coerce   => 1,
-);
-
-has 'axis' => (
-    is       => 'rw',
-    isa      => 'Google::Chart::Axis',
-    coerce   => 1,
-);
+{
+    while (my ($name, $spec) = each %COMPONENTS ) {
+        has $name => %$spec;
+    }
+}
 
 has 'ua' => (
     is       => 'rw',
@@ -75,7 +85,7 @@ sub as_uri {
     my $self = shift;
 
     my %query;
-    foreach my $c qw( type data size marker axis ) {
+    foreach my $c (@COMPONENTS) {
         my $component = $self->$c;
         next unless $component;
         my @params = $component->as_query;
@@ -117,6 +127,8 @@ sub render_to_file {
 
 __END__
 
+=encoding UTF-8
+
 =head1 NAME
 
 Google::Chart - Interface to Google Charts API
@@ -133,6 +145,14 @@ Google::Chart - Interface to Google Charts API
   print $chart->as_uri, "\n"; # or simply print $chart, "\n"
 
   $chart->render_to_file( filename => 'filename.png' );
+
+=head1 DESCRITPION
+
+Google::Chart provides a Perl Interface to Google Charts API 
+(http://code.google.com/apis/chart/).
+
+Please note that version 0.05000 is a major rewrite, and has little to no
+backwards compatibility.
 
 =head1 METHODS
 

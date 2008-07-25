@@ -4,6 +4,11 @@ global:
 releases:
   - author: 'Daisuke Maki <daisuke@endeworks.jp>'
     changes:
+      - Fix Fill::LinearStripes and Fill::LinearGradient
+      - Slight modification in Google::Chart accessor generation
+    version: 0.05000_02
+  - author: 'Daisuke Maki <daisuke@endeworks.jp>'
+    changes:
       - Mooooooooooooooooooooooose
     version: 0.05000_01
   - author: 'Marcel Gruenauer <marcel@cpan.org>'

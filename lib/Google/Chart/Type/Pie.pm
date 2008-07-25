@@ -1,4 +1,4 @@
-# $Id: /mirror/coderepos/lang/perl/Google-Chart/branches/moose/lib/Google/Chart/Type/Pie.pm 66683 2008-07-24T05:52:58.814530Z daisuke  $
+# $Id: /mirror/coderepos/lang/perl/Google-Chart/branches/moose/lib/Google/Chart/Type/Pie.pm 66700 2008-07-24T09:37:48.241728Z daisuke  $
 
 package Google::Chart::Type::Pie;
 use Moose;
@@ -45,5 +45,9 @@ Google::Chart::Type::Pie - Google::Chart Pie Chart Type
       }
     }
   );
+
+=head1 METHODS
+
+=head2 parameter_value
 
 =cut

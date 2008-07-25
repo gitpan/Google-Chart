@@ -1,9 +1,11 @@
-# $Id: /mirror/coderepos/lang/perl/Google-Chart/branches/moose/lib/Google/Chart/Fill/LinearStripes.pm 66687 2008-07-24T06:18:24.102192Z daisuke  $
+# $Id: /mirror/coderepos/lang/perl/Google-Chart/branches/moose/lib/Google/Chart/Fill/LinearStripes.pm 66974 2008-07-25T07:12:29.139681Z daisuke  $
 
 package Google::Chart::Fill::LinearStripes;
 use Moose;
 use Moose::Util::TypeConstraints;
 use Google::Chart::Types;
+
+with 'Google::Chart::Fill';
 
 subtype 'Google::Chart::Fill::LinearStripes::Angle'
     => as 'Num'
@@ -91,3 +93,14 @@ sub as_query {
 
 1;
 
+__END__
+
+=head1 NAME
+
+Google::Chart::Fill::LinearStripes - Apply Linear Strip Fill
+
+=head1 METHODS
+
+=head2 parameter_value
+
+=cut
