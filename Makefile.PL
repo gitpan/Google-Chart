@@ -7,6 +7,7 @@ all_from('lib/Google/Chart.pm');
 
 requires 'LWP::UserAgent';
 requires 'Moose', '0.54';
+requires 'Class::MOP', '0.63';
 requires 'URI';
 requires 'URI::Escape';
 requires 'Scalar::Util';

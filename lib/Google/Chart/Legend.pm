@@ -1,0 +1,83 @@
+# $Id: /mirror/coderepos/lang/perl/Google-Chart/branches/moose/lib/Google/Chart/Legend.pm 67460 2008-07-30T00:04:42.925021Z daisuke  $
+
+package Google::Chart::Legend;
+use Moose;
+use Moose::Util::TypeConstraints;
+use URI::Escape ();
+
+with 'Google::Chart::QueryComponent';
+
+coerce 'Google::Chart::Legend'
+    => from 'HashRef'
+    => via {
+        Google::Chart::Legend->new(%{$_});
+    }
+;
+coerce 'Google::Chart::Legend'
+    => from 'ArrayRef'
+    => via {
+        Google::Chart::Legend->new(values => $_);
+    }
+;
+
+coerce 'Google::Chart::Legend'
+    => from 'Str'
+    => via {
+        Google::Chart::Legend->new(values => [$_])
+    }
+;
+
+subtype 'Google::Chart::Legend::Value'
+    => as 'Str'
+;
+
+subtype 'Google::Chart::Legend::ValueList'
+    => as 'ArrayRef[Google::Chart::Legend::Value]',
+;
+
+coerce 'Google::Chart::Legend::ValueList'
+    => from 'Str'
+    => via { [ $_ ] }
+;
+
+has 'values' => (
+    is => 'rw',
+    isa => 'Google::Chart::Legend::ValueList',
+    coerce => 1,
+    required => 1,
+    default => sub { +[] }
+);
+
+has 'position' => (
+    is => 'rw',
+    isa => enum([ qw(b t r l) ]),
+);
+
+__PACKAGE__->meta->make_immutable;
+
+no Moose;
+
+sub as_query {
+    my $self = shift;
+    my %data = (
+        chdl => join('|', @{ $self->values }),
+    );
+    if (my $position = $self->position) {
+        $data{chdlp} = $position;
+    }
+    return wantarray ? %data : join('&',
+        map {
+            join('=', URI::Escape::uri_escape($_), URI::Escape::uri_escape($data{$_}))
+        } keys %data
+    );
+}
+
+1;
+
+__END__
+
+=head1 NAME
+
+Google::Chart::Legend - Google::Chart Legend
+
+=cut

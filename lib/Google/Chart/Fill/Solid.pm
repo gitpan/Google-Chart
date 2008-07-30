@@ -1,4 +1,4 @@
-# $Id: /mirror/coderepos/lang/perl/Google-Chart/branches/moose/lib/Google/Chart/Fill/Solid.pm 66700 2008-07-24T09:37:48.241728Z daisuke  $
+# $Id: /mirror/coderepos/lang/perl/Google-Chart/branches/moose/lib/Google/Chart/Fill/Solid.pm 67456 2008-07-29T23:42:23.504022Z daisuke  $
 
 package Google::Chart::Fill::Solid;
 use Moose;
@@ -9,7 +9,7 @@ with 'Google::Chart::Fill';
 
 has 'color' => (
     is => 'rw',
-    isa => 'Google::Chart::Color',
+    isa => 'Google::Chart::Color::Data',
     required => 1,
 );
 
@@ -25,7 +25,7 @@ no Moose;
 
 sub parameter_value {
     my $self = shift;
-    return join($self->target, 's', $self->color)
+    return join(',', $self->target, 's', $self->color)
 }
 
 1;

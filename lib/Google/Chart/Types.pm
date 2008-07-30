@@ -1,4 +1,4 @@
-# $Id: /mirror/coderepos/lang/perl/Google-Chart/branches/moose/lib/Google/Chart/Types.pm 66975 2008-07-25T07:13:14.026258Z daisuke  $
+# $Id: /mirror/coderepos/lang/perl/Google-Chart/branches/moose/lib/Google/Chart/Types.pm 67427 2008-07-29T10:40:51.707813Z lopnor  $
 
 package Google::Chart::Types;
 use Moose;
@@ -23,13 +23,6 @@ sub hash_coercion {
         Class::MOP::load_class( $module );
         return $module->new(%{ $h->{args} });
     }
-}
-
-{
-    subtype 'Google::Chart::Color'
-        => as 'Str'
-        => where { /^[a-f0-9]{6}/i }
-    ;
 }
 
 {
@@ -73,7 +66,7 @@ sub hash_coercion {
         => via {
             my $class = 'Google::Chart::Data::Text';
             Class::MOP::load_class($class);
-            $class->new(datasets => $_);
+            $class->new(dataset => $_);
         }
     ;
     coerce 'Google::Chart::Data'

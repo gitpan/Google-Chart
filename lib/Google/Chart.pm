@@ -1,8 +1,10 @@
-# $Id: /mirror/coderepos/lang/perl/Google-Chart/branches/moose/lib/Google/Chart.pm 66978 2008-07-25T07:15:08.563510Z daisuke  $
+# $Id: /mirror/coderepos/lang/perl/Google-Chart/branches/moose/lib/Google/Chart.pm 67454 2008-07-29T23:23:34.150378Z daisuke  $
 
 package Google::Chart;
 use Moose;
 use Google::Chart::Axis;
+use Google::Chart::Legend;
+use Google::Chart::Color;
 use Google::Chart::Data;
 use Google::Chart::Size;
 use Google::Chart::Type;
@@ -30,6 +32,16 @@ my %COMPONENTS = (
     data => {
         is       => 'rw',
         does     => 'Google::Chart::Data',
+        coerce   => 1,
+    },
+    color => {
+        is       => 'rw',
+        isa      => 'Google::Chart::Color',
+        coerce   => 1,
+    },
+    legend => {
+        is       => 'rw',
+        does     => 'Google::Chart::Legend',
         coerce   => 1,
     },
     size => {
@@ -249,6 +261,8 @@ know.
 =head1 AUTHORS
 
 Daisuke Maki C<< <daisuke@endeworks.jp> >> (current maintainer)
+
+Nobuo Danjou C<< <nobuo.danjou@gmail.com> >>
 
 Marcel Grünauer C<< <marcel@cpan.org> >> (original author)
 

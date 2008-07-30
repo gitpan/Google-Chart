@@ -11,7 +11,7 @@ BEGIN
             plan skip_all => "Test::Pod::Coverage required for testing pod coverage";
         } else {
             Test::Pod::Coverage::all_pod_coverage_ok({
-                trustme => [ 'BUILD' ]
+                trustme => [ 'BUILD', 'parameter_name', 'parameter_value' ]
             });
         }
     }

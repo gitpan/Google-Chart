@@ -1,10 +1,20 @@
 use strict;
-use Test::More (tests => 8);
+use Test::More (tests => 10);
 use Test::Exception;
 
 BEGIN
 {
     use_ok("Google::Chart");
+    use_ok("Google::Chart::Fill::Solid");
+}
+
+{
+    my $fill = Google::Chart::Fill::Solid->new(
+        color => 'ffccff',
+        target => 'bg',
+    );
+
+    is( $fill->as_query, "chf=bg%2Cs%2Cffccff", "solid fill creates proper query" );
 }
 
 {

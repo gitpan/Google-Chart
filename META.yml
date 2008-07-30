@@ -17,6 +17,7 @@ no_index:
     - inc
     - t
 requires:
+  Class::MOP: 0.63
   LWP::UserAgent: 0
   Moose: 0.54
   Scalar::Util: 0

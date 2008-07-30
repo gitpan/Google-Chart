@@ -1,4 +1,4 @@
-# $Id: /mirror/coderepos/lang/perl/Google-Chart/branches/moose/lib/Google/Chart/Fill/LinearGradient.pm 66974 2008-07-25T07:12:29.139681Z daisuke  $
+# $Id: /mirror/coderepos/lang/perl/Google-Chart/branches/moose/lib/Google/Chart/Fill/LinearGradient.pm 67427 2008-07-29T10:40:51.707813Z lopnor  $
 
 package Google::Chart::Fill::LinearGradient;
 use Moose;
@@ -35,7 +35,7 @@ has 'angle' => (
 
 has 'color' => (
     is => 'rw',
-    isa => 'Google::Chart::Color',
+    isa => 'Google::Chart::Color::Data',
     required => 1
 );
 

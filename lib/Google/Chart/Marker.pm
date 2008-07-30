@@ -1,9 +1,10 @@
-# $Id: /mirror/coderepos/lang/perl/Google-Chart/branches/moose/lib/Google/Chart/Marker.pm 66683 2008-07-24T05:52:58.814530Z daisuke  $
+# $Id: /mirror/coderepos/lang/perl/Google-Chart/branches/moose/lib/Google/Chart/Marker.pm 67427 2008-07-29T10:40:51.707813Z lopnor  $
 
 package Google::Chart::Marker;
 use Moose;
 use Moose::Util::TypeConstraints;
 use Google::Chart::Types;
+use Google::Chart::Color;
 
 use constant parameter_name => 'chm';
 
@@ -31,9 +32,9 @@ has 'marker_type' => (
 
 has 'color' => (
     is => 'rw',
-    isa => 'Google::Chart::Color',
+    isa => 'Google::Chart::Color::Data',
     required => 1,
-    default  => '000000',
+    default => '000000',
 );
 
 has 'dataset' => (

@@ -14,6 +14,7 @@ lib/Google/Chart.pm
 lib/Google/Chart/Axis.pm
 lib/Google/Chart/Axis/Item.pm
 lib/Google/Chart/Axis/Style.pm
+lib/Google/Chart/Color.pm
 lib/Google/Chart/Data.pm
 lib/Google/Chart/Data/Extended.pm
 lib/Google/Chart/Data/Simple.pm
@@ -22,6 +23,7 @@ lib/Google/Chart/Fill.pm
 lib/Google/Chart/Fill/LinearGradient.pm
 lib/Google/Chart/Fill/LinearStripes.pm
 lib/Google/Chart/Fill/Solid.pm
+lib/Google/Chart/Legend.pm
 lib/Google/Chart/Marker.pm
 lib/Google/Chart/QueryComponent.pm
 lib/Google/Chart/QueryComponent/Simple.pm
@@ -45,6 +47,9 @@ t/00_compile.t
 t/01_size.t
 t/02_marker.t
 t/10_text.t
+t/11_extended.t
+t/20_color.t
+t/21_legend.t
 t/50_line.t
 t/51_bar.t
 t/52_pie.t
@@ -53,4 +58,3 @@ t/60_axis.t
 t/61_fill.t
 t/99-pod-coverage.t
 t/99-pod.t
-t/foo.png

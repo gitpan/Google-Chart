@@ -1,4 +1,4 @@
-# $Id: /mirror/coderepos/lang/perl/Google-Chart/branches/moose/lib/Google/Chart/Data/Extended.pm 66620 2008-07-23T05:51:19.793422Z daisuke  $
+# $Id: /mirror/coderepos/lang/perl/Google-Chart/branches/moose/lib/Google/Chart/Data/Extended.pm 67419 2008-07-29T06:15:38.040731Z lopnor  $
 
 package Google::Chart::Data::Extended;
 use Moose;
@@ -13,7 +13,62 @@ has 'max_value' => (
 );
 
 has '+dataset' => (
-    isa => 'ArrayRef[Num]',
+    isa => 'ArrayRef[Google::Chart::Data::Extended::DataSet]',
+);
+
+__PACKAGE__->meta->make_immutable;
+
+no Moose;
+
+sub BUILDARGS {
+    my $self = shift;
+
+    # A dataset must be an array of arrays or array of values
+    my @dataset;
+    my @dataargs;
+    my %args;
+
+    if (@_ == 1 && ref $_[0] eq 'ARRAY') {
+        @dataargs = @{$_[0]};
+    } else {
+        %args = @_;
+        @dataargs = @{ delete $args{dataset} || [] };
+    }
+
+    if (! ref $dataargs[0] ) {
+        @dataargs = ([ @dataargs]);
+    }
+
+    foreach my $dataset ( @dataargs ) {
+        if (! blessed $dataset) {
+            $dataset = Google::Chart::Data::Extended::DataSet->new(data => $dataset)
+        }
+        push @dataset, $dataset;
+    }
+
+    return { %args, dataset => \@dataset }
+}
+
+sub parameter_value {
+    my $self = shift;
+    my $max = $self->max_value;
+    sprintf('e:%s',
+        join( ',', map { $_->as_string($max) } @{ $self->dataset } ) );
+}
+
+package # hide from PAUSE
+    Google::Chart::Data::Extended::DataSet;
+use Moose;
+use Moose::Util::TypeConstraints;
+
+subtype 'Google::Chart::Data::Extended::DataSet::Value'
+    => as 'Num';
+
+has 'data' => (
+    is => 'rw',
+    isa => 'ArrayRef[Maybe[Google::Chart::Data::Extended::DataSet::Value]]',
+    required => 1,
+    default => sub { +[] },
 );
 
 __PACKAGE__->meta->make_immutable;
@@ -22,17 +77,14 @@ no Moose;
 
 my @map = ('A'..'Z', 'a'..'z', 0..9, '-', '.');
 
-sub parameter_value {
-    my $self = shift;
-    my $max = $self->max_value;
-    my $dataset = $self->dataset;
-
-    my $result   = 'e:';
+sub as_string {
+    my ($self, $max) = @_;
     my $map_size = scalar @map;
     my $scale    = $map_size ** 2  - 1;
-    foreach my $data (@$dataset) {
+    my $result = '';
+    for my $data (@{$self->data}) {
         my $v = '__';
-        if (defined $data && looks_like_number($data)) {
+#        if (defined $data && looks_like_number($data)) {
             my $normalized = int(($data * $scale) / $max);
             if ($normalized < 0) {
                 $normalized = 0;
@@ -41,7 +93,7 @@ sub parameter_value {
             }
 
             $v = $map[ int($normalized / $map_size)  ] . $map[ int($normalized % $map_size) ];
-        }
+#        }
 
         $result .= $v;
     }
