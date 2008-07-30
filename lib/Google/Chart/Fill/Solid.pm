@@ -1,4 +1,4 @@
-# $Id: /mirror/coderepos/lang/perl/Google-Chart/branches/moose/lib/Google/Chart/Fill/Solid.pm 67456 2008-07-29T23:42:23.504022Z daisuke  $
+# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/lib/Google/Chart/Fill/Solid.pm 67466 2008-07-30T01:53:50.528367Z daisuke  $
 
 package Google::Chart::Fill::Solid;
 use Moose;

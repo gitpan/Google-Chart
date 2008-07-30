@@ -1,4 +1,4 @@
-# $Id: /mirror/coderepos/lang/perl/Google-Chart/branches/moose/lib/Google/Chart/Legend.pm 67460 2008-07-30T00:04:42.925021Z daisuke  $
+# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/lib/Google/Chart/Legend.pm 67466 2008-07-30T01:53:50.528367Z daisuke  $
 
 package Google::Chart::Legend;
 use Moose;
@@ -27,22 +27,22 @@ coerce 'Google::Chart::Legend'
     }
 ;
 
-subtype 'Google::Chart::Legend::Value'
+subtype 'Google::Chart::Legend::Data'
     => as 'Str'
 ;
 
-subtype 'Google::Chart::Legend::ValueList'
-    => as 'ArrayRef[Google::Chart::Legend::Value]',
+subtype 'Google::Chart::Legend::DataList'
+    => as 'ArrayRef[Google::Chart::Legend::Data]',
 ;
 
-coerce 'Google::Chart::Legend::ValueList'
+coerce 'Google::Chart::Legend::DataList'
     => from 'Str'
     => via { [ $_ ] }
 ;
 
 has 'values' => (
     is => 'rw',
-    isa => 'Google::Chart::Legend::ValueList',
+    isa => 'Google::Chart::Legend::DataList',
     coerce => 1,
     required => 1,
     default => sub { +[] }

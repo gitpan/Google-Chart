@@ -1,4 +1,4 @@
-# $Id: /mirror/coderepos/lang/perl/Google-Chart/branches/moose/lib/Google/Chart/Axis/Item.pm 66588 2008-07-22T15:40:51.987597Z daisuke  $
+# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/lib/Google/Chart/Axis/Item.pm 67466 2008-07-30T01:53:50.528367Z daisuke  $
 
 package Google::Chart::Axis::Item;
 use Moose;

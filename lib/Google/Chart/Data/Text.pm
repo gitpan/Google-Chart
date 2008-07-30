@@ -1,4 +1,4 @@
-# $Id: /mirror/coderepos/lang/perl/Google-Chart/branches/moose/lib/Google/Chart/Data/Text.pm 66620 2008-07-23T05:51:19.793422Z daisuke  $
+# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/lib/Google/Chart/Data/Text.pm 67466 2008-07-30T01:53:50.528367Z daisuke  $
 
 package Google::Chart::Data::Text;
 use Moose;

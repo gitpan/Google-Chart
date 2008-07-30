@@ -1,4 +1,4 @@
-# $Id: /mirror/coderepos/lang/perl/Google-Chart/branches/moose/lib/Google/Chart.pm 67454 2008-07-29T23:23:34.150378Z daisuke  $
+# $Id$
 
 package Google::Chart;
 use Moose;
@@ -215,6 +215,12 @@ Specifies the markers that go on line charts.
 
 Specifies the axis labels and such that go on line and bar charts
 
+=item legend
+
+=item color
+
+=item fill
+
 =back
 
 =head2 as_uri()
@@ -245,10 +251,6 @@ code snippets, pseudocode, or even better, test cases, are most welcome.
 
 Objects need to expect data in a standard format. This is not the case yet.
 (comments welcome)
-
-=item Adding New Components Is Cumbersome
-
-There must be an easy way to just plug it in.
 
 =item Moose-ish Errors
 
