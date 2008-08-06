@@ -1,4 +1,4 @@
-# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/lib/Google/Chart/Fill/Solid.pm 67466 2008-07-30T01:53:50.528367Z daisuke  $
+# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/lib/Google/Chart/Fill/Solid.pm 67926 2008-08-06T04:40:02.039865Z daisuke  $
 
 package Google::Chart::Fill::Solid;
 use Moose;
@@ -36,8 +36,23 @@ __END__
 
 Google::Chart::Fill::Solid - Apply Solid Fill
 
-=head1 METHODS
+=head1 SYNOPSIS
 
-=head2 parameter_value
+  use Google::Chart;
+  Google::Chart->new(
+    fill => {
+      args => {
+        color => "ffccff",
+        target => "bg",
+      }
+    }
+  );
+
+  Google::Chart->new(
+    fill => Google::Chart::Fill::Solid->new(
+      color => "ffcff",
+      target => "bg"
+    )
+  );
 
 =cut

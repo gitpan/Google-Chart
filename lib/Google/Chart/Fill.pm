@@ -1,4 +1,4 @@
-# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/lib/Google/Chart/Fill.pm 67466 2008-07-30T01:53:50.528367Z daisuke  $
+# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/lib/Google/Chart/Fill.pm 67926 2008-08-06T04:40:02.039865Z daisuke  $
 
 package Google::Chart::Fill;
 use Moose::Role;
@@ -16,5 +16,16 @@ __END__
 =head1 NAME
 
 Google::Chart::Fill - Base Fill Role
+
+=head1 SYNOPSIS
+
+  package NewFillType;
+  use Moose;
+
+  with 'Google::Chart::Fill';
+
+  no Moose;
+
+  sub parameter_value { ... }
 
 =cut

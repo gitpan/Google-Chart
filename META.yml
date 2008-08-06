@@ -3,8 +3,8 @@ abstract: 'Interface to Google Charts API'
 author:
   - 'Daisuke Maki C<< <daisuke@endeworks.jp> >> (current maintainer)'
 build_requires:
-  Test::Compile: 0
   Test::More: 0
+  Test::UseAllModules: 0
 distribution_type: module
 generated_by: 'Module::Install version 0.76'
 license: perl
@@ -25,4 +25,4 @@ requires:
   URI::Escape: 0
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.05000
+version: 0.05001
