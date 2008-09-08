@@ -1,4 +1,4 @@
-# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/lib/Google/Chart/Fill/LinearGradient.pm 67466 2008-07-30T01:53:50.528367Z daisuke  $
+# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/lib/Google/Chart/Fill/LinearGradient.pm 72336 2008-09-06T14:09:33.087086Z daisuke  $
 
 package Google::Chart::Fill::LinearGradient;
 use Moose;
@@ -50,6 +50,7 @@ has 'offset' => (
 __PACKAGE__->meta->make_immutable;
 
 no Moose;
+no Moose::Util::TypeConstraints;
 
 sub parameter_value {
     my $self = shift;

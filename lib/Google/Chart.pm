@@ -1,9 +1,10 @@
-# $Id$
+# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/lib/Google/Chart.pm 72449 2008-09-08T14:36:22.272469Z daisuke  $
 
 package Google::Chart;
 use Moose;
 use Google::Chart::Axis;
 use Google::Chart::Legend;
+use Google::Chart::Grid;
 use Google::Chart::Color;
 use Google::Chart::Data;
 use Google::Chart::Size;
@@ -15,11 +16,10 @@ use overload
     '""' => \&as_uri,
     fallback => 1,
 ;
-our $USER_AGENT;
 
 use constant BASE_URI => URI->new("http://chart.apis.google.com/chart");
 
-our $VERSION   = '0.05003';
+our $VERSION   = '0.05004';
 our $AUTHORITY = 'cpan:DMAKI';
 
 my %COMPONENTS = (
@@ -42,6 +42,11 @@ my %COMPONENTS = (
     legend => {
         is       => 'rw',
         does     => 'Google::Chart::Legend',
+        coerce   => 1,
+    },
+    grid => {
+        is       => 'rw',
+        isa     => 'Google::Chart::Grid',
         coerce   => 1,
     },
     size => {
@@ -81,7 +86,9 @@ has 'ua' => (
     isa      => 'LWP::UserAgent',
     required => 1,
     lazy     => 1,
-    default  => sub { $USER_AGENT ||= LWP::UserAgent->new() }
+    default  => sub {
+        LWP::UserAgent->new(agent => "perl/Google-Chart-$VERSION")
+    }
 );
 
 __PACKAGE__->meta->make_immutable;

@@ -1,4 +1,4 @@
-# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/lib/Google/Chart/Data/Extended.pm 67466 2008-07-30T01:53:50.528367Z daisuke  $
+# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/lib/Google/Chart/Data/Extended.pm 72336 2008-09-06T14:09:33.087086Z daisuke  $
 
 package Google::Chart::Data::Extended;
 use Moose;
@@ -10,6 +10,13 @@ has 'max_value' => (
     is => 'rw', 
     isa => 'Num',
     required => 1,
+);
+
+has 'min_value' => (
+    is => 'rw', 
+    isa => 'Num',
+    required => 1,
+    default => 0,
 );
 
 has '+dataset' => (
@@ -40,7 +47,7 @@ sub BUILDARGS {
     }
 
     foreach my $dataset ( @dataargs ) {
-        if (! blessed $dataset) {
+        if (! Scalar::Util::blessed $dataset) {
             $dataset = Google::Chart::Data::Extended::DataSet->new(data => $dataset)
         }
         push @dataset, $dataset;
@@ -52,8 +59,9 @@ sub BUILDARGS {
 sub parameter_value {
     my $self = shift;
     my $max = $self->max_value;
+    my $min = $self->min_value;
     sprintf('e:%s',
-        join( ',', map { $_->as_string($max) } @{ $self->dataset } ) );
+        join( ',', map { $_->as_string({max => $max, min => $min}) } @{ $self->dataset } ) );
 }
 
 package # hide from PAUSE
@@ -74,18 +82,21 @@ has 'data' => (
 __PACKAGE__->meta->make_immutable;
 
 no Moose;
+no Moose::Util::TypeConstraints;
 
 my @map = ('A'..'Z', 'a'..'z', 0..9, '-', '.');
 
 sub as_string {
-    my ($self, $max) = @_;
+    my ($self, $args) = @_;
+    my $max = $args->{max};
+    my $min = $args->{min};
     my $map_size = scalar @map;
     my $scale    = $map_size ** 2  - 1;
     my $result = '';
     for my $data (@{$self->data}) {
         my $v = '__';
 #        if (defined $data && looks_like_number($data)) {
-            my $normalized = int(($data * $scale) / $max);
+            my $normalized = int((($data - $min) * $scale) / abs($max - $min));
             if ($normalized < 0) {
                 $normalized = 0;
             } elsif ($normalized >= $scale) {

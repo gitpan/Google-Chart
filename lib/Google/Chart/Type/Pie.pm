@@ -1,4 +1,4 @@
-# $Id$
+# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/lib/Google/Chart/Type/Pie.pm 72336 2008-09-06T14:09:33.087086Z daisuke  $
 
 package Google::Chart::Type::Pie;
 use Moose;
@@ -16,6 +16,7 @@ has 'pie_type' => (
 __PACKAGE__->meta->make_immutable;
 
 no Moose;
+no Moose::Util::TypeConstraints;
 
 sub parameter_value {
     my $self = shift;

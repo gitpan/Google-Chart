@@ -1,16 +1,87 @@
-# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/lib/Google/Chart/Marker.pm 67466 2008-07-30T01:53:50.528367Z daisuke  $
+# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/lib/Google/Chart/Marker.pm 72336 2008-09-06T14:09:33.087086Z daisuke  $
 
 package Google::Chart::Marker;
 use Moose;
 use Moose::Util::TypeConstraints;
-use Google::Chart::Types;
-use Google::Chart::Color;
 
 use constant parameter_name => 'chm';
 
 with 'Google::Chart::QueryComponent::Simple';
 
-enum 'Google::Chart::Marker::Type' => (
+has 'markerset' => (
+    is => 'rw',
+    isa => 'ArrayRef[Google::Chart::Marker::Item]',
+    required => 1,
+    default => sub { 
+        [ Google::Chart::Marker::Item->new ] ;
+    }
+);
+
+__PACKAGE__->meta->make_immutable;
+
+no Moose;
+no Moose::Util::TypeConstraints;
+
+sub BUILDARGS {
+    my $self = shift;
+    my @markerset;
+    my @markerargs;
+    my %args;
+
+    if (@_ == 1 && ref $_[0] eq 'ARRAY') {
+        @markerargs = @{$_[0]};
+    } else {
+        %args = @_;
+        my $arg = delete $args{markerset};
+        if (ref $arg eq 'ARRAY') {
+            @markerargs = @{ $arg };
+        } elsif (ref $arg eq 'HASH') {
+            @markerargs = ( $arg );
+        }
+    }
+
+
+    @markerargs = ( {} ) unless @markerargs;
+
+    foreach my $marker ( @markerargs ) {
+        if (! Scalar::Util::blessed $marker) {
+            $marker = Google::Chart::Marker::Item->new($marker)
+        }
+        push @markerset, $marker;
+    }
+
+    return { %args, markerset => \@markerset };
+}
+
+sub parameter_value {
+    my $self = shift;
+    return join ('|',
+        map {$_->as_string} @{$self->markerset}
+    );
+}
+
+package # hide from PAUSE
+    Google::Chart::Marker::Item;
+use Moose;
+use Moose::Util::TypeConstraints;
+use Google::Chart::Types;
+use Google::Chart::Color;
+
+coerce 'Google::Chart::Marker::Item'
+    => from 'HashRef'
+    => via {
+        Google::Chart::Marker::Item->new(%{$_});
+    }
+;
+
+coerce 'Google::Chart::Marker::Item'
+    => from 'ArrayRef'
+    => via {
+        Google::Chart::Marker::Item->new(%{$_});
+    }
+;
+
+enum 'Google::Chart::Marker::Item::Type' => (
     'a', # arrow
     'c', # corrs
     'd', # diamond
@@ -25,7 +96,7 @@ enum 'Google::Chart::Marker::Type' => (
 
 has 'marker_type' => (
     is => 'rw',
-    isa => 'Google::Chart::Marker::Type',
+    isa => 'Google::Chart::Marker::Item::Type',
     required => 1,
     default => 'o'
 );
@@ -34,7 +105,9 @@ has 'color' => (
     is => 'rw',
     isa => 'Google::Chart::Color::Data',
     required => 1,
-    default => '000000',
+    # XXX - Hack (for some reason moose didn't like a plain '000000')
+    # will investigate later
+    default => sub { return '000000' },
 );
 
 has 'dataset' => (
@@ -53,7 +126,7 @@ has 'datapoint' => (
 
 has 'size' => (
     is => 'rw',
-    isa => 'Int',
+    isa => 'Num',
     required => 1,
     default => 5,
 );
@@ -65,9 +138,12 @@ has 'priority' => (
     default => 0,
 );
 
-no Moose;
+__PACKAGE__->meta->make_immutable;
 
-sub parameter_value {
+no Moose;
+no Moose::Util::TypeConstraints;
+
+sub as_string {
     my $self = shift;
 
     return join(',', 

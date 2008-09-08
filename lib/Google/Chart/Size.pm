@@ -1,9 +1,10 @@
-# $Id$
+# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/lib/Google/Chart/Size.pm 72448 2008-09-08T14:34:41.879369Z daisuke  $
 
 package Google::Chart::Size;
 use Moose;
 use Moose::Util::TypeConstraints;
 use Google::Chart::Types qw(hash_coercion);
+use Carp();
 
 use constant parameter_name => 'chs';
 
@@ -13,7 +14,7 @@ coerce 'Google::Chart::Size'
     => from 'Str'
     => via {
         if (! /^(\d+)x(\d+)$/) {
-            confess "Could not parse $_ as size";
+            Carp::confess("Could not parse $_ as size");
         }
 
         return Google::Chart::Size->new(width => $1, height => $2);
@@ -37,7 +38,10 @@ has 'height' => (
     required => 1
 );
 
+__PACKAGE__->meta->make_immutable;
+
 no Moose;
+no Moose::Util::TypeConstraints;
 
 sub parameter_value {
     my $self = shift;

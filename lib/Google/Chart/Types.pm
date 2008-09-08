@@ -1,7 +1,9 @@
-# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/lib/Google/Chart/Types.pm 67466 2008-07-30T01:53:50.528367Z daisuke  $
+# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/lib/Google/Chart/Types.pm 72448 2008-09-08T14:34:41.879369Z daisuke  $
 
 package Google::Chart::Types;
-use Moose;
+use strict;
+use warnings;
+use Carp ();
 use Moose::Util::TypeConstraints;
 use Sub::Exporter -setup => {
     exports => [ qw(hash_coercion) ]
@@ -16,7 +18,7 @@ sub hash_coercion {
     return sub {
         my $h = $_;
         my $module = $h->{module} || $default ||
-            confess "No module name provided for coercion";
+            Carp::confess("No module name provided for coercion");
         if ($module !~ s/^\+//) {
             $module = join('::', $prefix, $module);
         }
@@ -83,7 +85,7 @@ sub hash_coercion {
     ;
 }
 
-no Moose;
+no Moose::Util::TypeConstraints;
 
 1;
 

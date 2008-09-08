@@ -1,4 +1,4 @@
-# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/lib/Google/Chart/Data/Text.pm 67466 2008-07-30T01:53:50.528367Z daisuke  $
+# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/lib/Google/Chart/Data/Text.pm 72336 2008-09-06T14:09:33.087086Z daisuke  $
 
 package Google::Chart::Data::Text;
 use Moose;
@@ -33,7 +33,7 @@ sub BUILDARGS {
     }
 
     foreach my $dataset ( @dataargs ) {
-        if (! blessed $dataset) {
+        if (! Scalar::Util::blessed $dataset) {
             $dataset = Google::Chart::Data::Text::DataSet->new(data => $dataset)
         }
         push @dataset, $dataset;
@@ -70,6 +70,7 @@ has 'data' => (
 __PACKAGE__->meta->make_immutable;
     
 no Moose;
+no Moose::Util::TypeConstraints;
 
 sub as_string {
     my $self = shift;

@@ -27,7 +27,8 @@ coerce 'Google::Chart::Color'
 
 subtype 'Google::Chart::Color::Data'
     => as 'Str'
-    => where { /^[a-f0-9]{6}/i }
+    => where { /^[a-f0-9]{6}$/i }
+    => message { "value '$_' is not a valid hexadecimal value" }
 ;
 
 subtype 'Google::Chart::Color::DataList'
@@ -50,6 +51,7 @@ has 'values' => (
 __PACKAGE__->meta->make_immutable;
 
 no Moose;
+no Moose::Util::TypeConstraints;
 
 sub parameter_value {
     my $self = shift;
