@@ -1,8 +1,9 @@
-# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/lib/Google/Chart/Type/QRcode.pm 72336 2008-09-06T14:09:33.087086Z daisuke  $
+# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/lib/Google/Chart/Type/QRcode.pm 83944 2008-09-10T10:17:33.006116Z daisuke  $
 
 package Google::Chart::Type::QRcode;
 use Moose;
 use Moose::Util::TypeConstraints;
+use Encode ();
 
 enum 'Google::Chart::Type::QRcode::Encoding' => qw(shift_jis utf-8 iso-8859-1);
 enum 'Google::Chart::Type::QRcode::ECLevel' => qw(L M Q H);
@@ -50,8 +51,9 @@ no Moose::Util::TypeConstraints;
 sub as_query {
     my $self = shift;
     my %data = (
-        cht => 'qr',
-        chl => $self->text,
+        cht  => 'qr',
+        chl  => Encode::is_utf8($self->text) ?
+            Encode::decode_utf8($self->text) : $self->text,
         choe => $self->encoding,
         chld => $self->eclevel || $self->margin ? 
             join( '|', $self->eclevel || '', $self->margin || '') : ''
