@@ -1,4 +1,4 @@
-# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/lib/Google/Chart/Size.pm 72448 2008-09-08T14:34:41.879369Z daisuke  $
+# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/lib/Google/Chart/Size.pm 84199 2008-09-16T05:13:04.155571Z daisuke  $
 
 package Google::Chart::Size;
 use Moose;
@@ -23,7 +23,16 @@ coerce 'Google::Chart::Size'
 
 coerce 'Google::Chart::Size'
     => from 'HashRef'
-    => hash_coercion( prefix => 'Google::Chart::Size', default => '+Google::Chart::Size' )
+    => via { 
+        my $h = $_;
+
+        my ($width, $height) = ($h->{args}) ?
+            ($h->{args}->{width}, $h->{args}->{height}) :
+            ($h->{width}, $h->{height})
+        ;
+
+        return Google::Chart::Size->new( width => $width, height => $height );
+    }
 ;
 
 has 'width' => (
