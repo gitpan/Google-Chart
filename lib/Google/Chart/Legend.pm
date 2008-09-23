@@ -1,4 +1,4 @@
-# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/lib/Google/Chart/Legend.pm 72336 2008-09-06T14:09:33.087086Z daisuke  $
+# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/lib/Google/Chart/Legend.pm 84709 2008-09-23T11:36:48.504956Z daisuke  $
 
 package Google::Chart::Legend;
 use Moose;
@@ -80,5 +80,9 @@ __END__
 =head1 NAME
 
 Google::Chart::Legend - Google::Chart Legend
+
+=head1 METHODS
+
+=head2 as_query
 
 =cut

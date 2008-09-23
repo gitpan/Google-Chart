@@ -1,4 +1,4 @@
-# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/lib/Google/Chart.pm 84200 2008-09-16T05:20:56.516871Z daisuke  $
+# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/lib/Google/Chart.pm 84710 2008-09-23T11:44:46.220974Z daisuke  $
 
 package Google::Chart;
 use 5.008;
@@ -20,7 +20,7 @@ use overload
 
 use constant BASE_URI => URI->new("http://chart.apis.google.com/chart");
 
-our $VERSION   = '0.05006';
+our $VERSION   = '0.05007';
 our $AUTHORITY = 'cpan:DMAKI';
 
 my %COMPONENTS = (
@@ -191,6 +191,14 @@ already instanstiated object, or pass in a hash, which will be coerced to
 the appropriate object
 
   my $chart = Google::Chart->new(
+    type => Google::Chart::Bar->new(
+      orientation => "horizontal"
+    )
+  );
+
+  # or
+
+  my $chart = Google::Chart->new(
     type => {
       module => "Bar",
       args   => {
@@ -244,6 +252,10 @@ Generates the chart image, and returns the contents.
 Generates the chart, and writes the contents out to the file specified by
 `filename' parameter
 
+=head2 BASE_URI
+
+The base URI for Google Chart
+
 =head1 FEEDBACK
 
 We don't believe that we fully utilize Google Chart's abilities. So there
@@ -282,4 +294,5 @@ This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
 
 See http://www.perl.com/perl/misc/Artistic.html
+
 =cut
