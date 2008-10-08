@@ -1,4 +1,4 @@
-# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/lib/Google/Chart.pm 84710 2008-09-23T11:44:46.220974Z daisuke  $
+# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/lib/Google/Chart.pm 87596 2008-10-08T22:02:21.445870Z daisuke  $
 
 package Google::Chart;
 use 5.008;
@@ -20,7 +20,7 @@ use overload
 
 use constant BASE_URI => URI->new("http://chart.apis.google.com/chart");
 
-our $VERSION   = '0.05007';
+our $VERSION   = '0.05008';
 our $AUTHORITY = 'cpan:DMAKI';
 
 my %COMPONENTS = (
@@ -136,7 +136,13 @@ sub render {
 }
 
 sub render_to_file {
-    my ($self, $filename) = @_;
+    # XXX - This is done like this because there was a document-implementation
+    # mismatch. In the future, single argument form should be deprecated
+    my $self = shift;
+    my $filename = (@_ > 1) ? do {
+        my %args = @_;
+        $args{filename};
+    }: $_[0];
 
     open my $fh, '>', $filename or die "can't open $filename for writing: $!\n";
     print $fh $self->render;
