@@ -1,4 +1,4 @@
-# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/lib/Google/Chart.pm 92616 2008-11-25T12:01:05.487763Z daisuke  $
+# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/lib/Google/Chart.pm 92674 2008-11-26T04:43:57.067736Z daisuke  $
 
 package Google::Chart;
 use 5.008;
@@ -20,7 +20,7 @@ use overload
 
 use constant BASE_URI => URI->new("http://chart.apis.google.com/chart");
 
-our $VERSION   = '0.05009';
+our $VERSION   = '0.05010';
 our $AUTHORITY = 'cpan:DMAKI';
 
 my %COMPONENTS = (
@@ -83,18 +83,17 @@ my @COMPONENTS = keys %COMPONENTS;
 }
 
 has 'ua' => (
-    is       => 'rw',
-    isa      => 'LWP::UserAgent',
-    required => 1,
-    lazy     => 1,
-    builder  => 'build_ua',
+    is         => 'rw',
+    isa        => 'LWP::UserAgent',
+    required   => 1,
+    lazy_build => 1,
 );
 
 __PACKAGE__->meta->make_immutable;
 
 no Moose;
 
-sub build_ua {
+sub _build_ua {
     my $self = shift;
     my $ua = LWP::UserAgent->new(
         agent => "perl/Google-Chart-$VERSION",
