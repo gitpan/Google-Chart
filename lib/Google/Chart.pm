@@ -1,4 +1,4 @@
-# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/lib/Google/Chart.pm 92674 2008-11-26T04:43:57.067736Z daisuke  $
+# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/lib/Google/Chart.pm 94361 2008-12-08T07:34:53.949794Z daisuke  $
 
 package Google::Chart;
 use 5.008;
@@ -20,7 +20,7 @@ use overload
 
 use constant BASE_URI => URI->new("http://chart.apis.google.com/chart");
 
-our $VERSION   = '0.05010';
+our $VERSION   = '0.05011';
 our $AUTHORITY = 'cpan:DMAKI';
 
 my %COMPONENTS = (
@@ -151,6 +151,7 @@ sub render_to_file {
     }: $_[0];
 
     open my $fh, '>', $filename or die "can't open $filename for writing: $!\n";
+    binmode($fh); # be nice to windows
     print $fh $self->render;
     close $fh or die "can't close $filename: $!\n";
 }
