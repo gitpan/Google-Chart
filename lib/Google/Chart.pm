@@ -1,4 +1,4 @@
-# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/lib/Google/Chart.pm 94361 2008-12-08T07:34:53.949794Z daisuke  $
+# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/lib/Google/Chart.pm 98160 2009-01-10T12:16:27.687664Z daisuke  $
 
 package Google::Chart;
 use 5.008;
@@ -20,7 +20,7 @@ use overload
 
 use constant BASE_URI => URI->new("http://chart.apis.google.com/chart");
 
-our $VERSION   = '0.05011';
+our $VERSION   = '0.05012';
 our $AUTHORITY = 'cpan:DMAKI';
 
 my %COMPONENTS = (

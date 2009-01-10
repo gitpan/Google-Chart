@@ -1,8 +1,12 @@
-# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/lib/Google/Chart/Data/Simple.pm 72336 2008-09-06T14:09:33.087086Z daisuke  $
+# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/lib/Google/Chart/Data/Simple.pm 98158 2009-01-10T12:08:03.186414Z daisuke  $
 
 package Google::Chart::Data::Simple;
 use Moose;
 use Scalar::Util qw(looks_like_number);
+
+with 'Google::Chart::Data';
+
+__PACKAGE__->meta->make_immutable;
 
 no Moose;
 
