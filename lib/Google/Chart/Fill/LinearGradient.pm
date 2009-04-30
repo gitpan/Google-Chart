@@ -1,4 +1,4 @@
-# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/lib/Google/Chart/Fill/LinearGradient.pm 72336 2008-09-06T14:09:33.087086Z daisuke  $
+# $Id$
 
 package Google::Chart::Fill::LinearGradient;
 use Moose;
@@ -33,19 +33,31 @@ has 'angle' => (
     required => 1
 );
 
-has 'color' => (
+has 'color1' => (
     is => 'rw',
     isa => 'Google::Chart::Color::Data',
     required => 1
 );
 
-has 'offset' => (
+has 'color2' => (
+    is => 'rw',
+    isa => 'Google::Chart::Color::Data',
+    required => 1
+);
+
+has 'offset1' => (
     is => 'rw',
     isa => 'Google::Chart::Fill::LinearGradient::Offset',
     default => 0,
     required => 1,
 );
 
+has 'offset2' => (
+    is => 'rw',
+    isa => 'Google::Chart::Fill::LinearGradient::Offset',
+    default => 0,
+    required => 1,
+);
 
 __PACKAGE__->meta->make_immutable;
 
@@ -54,7 +66,7 @@ no Moose::Util::TypeConstraints;
 
 sub parameter_value {
     my $self = shift;
-    return join(",", $self->target, 'lg', $self->angle, $self->color, $self->offset);
+    return join(",", $self->target, 'lg', $self->angle, $self->color1, $self->offset1, $self->color2, $self->offset2);
 }
 
 1;

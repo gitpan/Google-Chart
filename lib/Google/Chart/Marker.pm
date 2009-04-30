@@ -1,4 +1,4 @@
-# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/lib/Google/Chart/Marker.pm 72336 2008-09-06T14:09:33.087086Z daisuke  $
+# $Id$
 
 package Google::Chart::Marker;
 use Moose;
@@ -92,6 +92,7 @@ enum 'Google::Chart::Marker::Item::Type' => (
     'V', # vertical line to the top of the chart
     'h', # horizontal line across
     'x', # x shape
+    'D', # Line and bar chart line styles
 );
 
 has 'marker_type' => (

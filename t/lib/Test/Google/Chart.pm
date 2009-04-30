@@ -1,4 +1,4 @@
-# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/t/lib/Test/Google/Chart.pm 92672 2008-11-26T04:39:57.568658Z daisuke  $
+# $Id$
 
 package Test::Google::Chart;
 use strict;

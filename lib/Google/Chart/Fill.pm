@@ -1,4 +1,4 @@
-# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/lib/Google/Chart/Fill.pm 67926 2008-08-06T04:40:02.039865Z daisuke  $
+# $Id$
 
 package Google::Chart::Fill;
 use Moose::Role;

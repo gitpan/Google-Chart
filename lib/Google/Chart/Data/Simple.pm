@@ -1,4 +1,4 @@
-# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/lib/Google/Chart/Data/Simple.pm 98158 2009-01-10T12:08:03.186414Z daisuke  $
+# $Id$
 
 package Google::Chart::Data::Simple;
 use Moose;

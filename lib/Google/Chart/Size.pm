@@ -1,4 +1,4 @@
-# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/lib/Google/Chart/Size.pm 84199 2008-09-16T05:13:04.155571Z daisuke  $
+# $Id$
 
 package Google::Chart::Size;
 use Moose;

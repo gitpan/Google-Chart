@@ -1,4 +1,4 @@
-# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/lib/Google/Chart/Legend.pm 84709 2008-09-23T11:36:48.504956Z daisuke  $
+# $Id$
 
 package Google::Chart::Legend;
 use Moose;

@@ -1,4 +1,4 @@
-# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/lib/Google/Chart/QueryComponent/Simple.pm 67466 2008-07-30T01:53:50.528367Z daisuke  $
+# $Id$
 
 package Google::Chart::QueryComponent::Simple;
 use Moose::Role;

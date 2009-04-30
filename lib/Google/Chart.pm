@@ -1,4 +1,4 @@
-# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/lib/Google/Chart.pm 99433 2009-01-29T22:50:32.136923Z daisuke  $
+# $Id$
 
 package Google::Chart;
 use 5.008;
@@ -11,6 +11,8 @@ use Google::Chart::Data;
 use Google::Chart::Size;
 use Google::Chart::Type;
 use Google::Chart::Types;
+use Google::Chart::Title;
+use Google::Chart::Margin;
 use LWP::UserAgent;
 use URI;
 use overload
@@ -20,7 +22,7 @@ use overload
 
 use constant BASE_URI => URI->new("http://chart.apis.google.com/chart");
 
-our $VERSION   = '0.05013';
+our $VERSION   = '0.05014_01';
 our $AUTHORITY = 'cpan:DMAKI';
 
 my %COMPONENTS = (
@@ -72,7 +74,17 @@ my %COMPONENTS = (
         is       => 'rw',
         does     => 'Google::Chart::Fill',
         coerce   => 1
-    }
+    },
+    title => {
+        is       => 'rw',
+        does     => 'Google::Chart::Title',
+        coerce   => 1
+    },
+    margin => {
+        is       => 'rw',
+        does     => 'Google::Chart::Margin',
+        coerce   => 1
+    },
 );
 my @COMPONENTS = keys %COMPONENTS;
 

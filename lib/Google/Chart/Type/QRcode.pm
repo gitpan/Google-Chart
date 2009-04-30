@@ -1,4 +1,4 @@
-# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/lib/Google/Chart/Type/QRcode.pm 83944 2008-09-10T10:17:33.006116Z daisuke  $
+# $Id$
 
 package Google::Chart::Type::QRcode;
 use Moose;

@@ -1,4 +1,4 @@
-# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/lib/Google/Chart/Types.pm 72448 2008-09-08T14:34:41.879369Z daisuke  $
+# $Id$
 
 package Google::Chart::Types;
 use strict;

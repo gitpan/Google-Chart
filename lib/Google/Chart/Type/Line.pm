@@ -1,4 +1,4 @@
-# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/lib/Google/Chart/Type/Line.pm 72334 2008-09-06T13:00:51.986261Z daisuke  $
+# $Id$
 
 package Google::Chart::Type::Line;
 use Moose;

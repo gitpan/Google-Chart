@@ -1,8 +1,16 @@
-# $Id: /mirror/coderepos/lang/perl/Google-Chart/trunk/lib/Google/Chart/Title.pm 67466 2008-07-30T01:53:50.528367Z daisuke  $
+# $Id$
 
 package Google::Chart::Title;
 use Moose;
 use Google::Chart::Types;
+use Moose::Util::TypeConstraints;
+
+coerce 'Google::Chart::Title'
+    => from 'HashRef'
+    => via {
+        Google::Chart::Title->new(%$_);
+    }
+;
 
 with 'Google::Chart::QueryComponent';
 
@@ -29,7 +37,7 @@ no Moose;
 sub as_query {
     my $self = shift;
 
-    my $text = $self->title;
+    my $text = $self->text;
     $text =~ s/\r?\n/|/gsm;
     my %data = (
         chtt => $text
