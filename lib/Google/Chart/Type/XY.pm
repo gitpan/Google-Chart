@@ -1,12 +1,21 @@
-# $Id$
 
 package Google::Chart::Type::XY;
 use Moose;
-use constant parameter_value => 'lxy';
+use namespace::clean -except => qw(meta);
 
-with 'Google::Chart::Type::Simple';
+extends 'Google::Chart';
 
-no Moose;
+sub _build_type { 'lxy' };
+
+with qw(
+    Google::Chart::WithAxis
+    Google::Chart::WithData
+    Google::Chart::WithGrid
+    Google::Chart::WithLineStyle
+    Google::Chart::WithMarker
+);
+
+__PACKAGE__->meta->make_immutable();
 
 1;
 

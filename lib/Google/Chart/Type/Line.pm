@@ -1,12 +1,28 @@
-# $Id$
 
 package Google::Chart::Type::Line;
 use Moose;
-use constant parameter_value => 'lc';
+use namespace::clean -except => qw(meta);
 
-with 'Google::Chart::Type::Simple';
+extends 'Google::Chart';
+with qw(
+    Google::Chart::WithAxis
+    Google::Chart::WithData 
+    Google::Chart::WithGrid
+    Google::Chart::WithLinearGradientFill
+    Google::Chart::WithLinearStripe
+    Google::Chart::WithLineStyle
+    Google::Chart::WithLineDrawStyle
+    Google::Chart::WithMarker
+    Google::Chart::WithRangeFill
+    Google::Chart::WithRangeMarker
+    Google::Chart::WithSolidFill
+);
 
-no Moose;
+sub _build_type {
+    return 'lc';
+}
+
+__PACKAGE__->meta->make_immutable;
 
 1;
 

@@ -1,15 +1,25 @@
-# $Id$
 
 package Google::Chart::Type::SparkLine;
 use Moose;
+use namespace::clean -except => qw(meta);
 
-use constant parameter_value => 'ls';
+extends 'Google::Chart';
+with qw(
+    Google::Chart::WithAxis
+    Google::Chart::WithData 
+    Google::Chart::WithGrid
+    Google::Chart::WithLinearGradientFill
+    Google::Chart::WithLinearStripe
+    Google::Chart::WithLineStyle
+    Google::Chart::WithLineDrawStyle
+    Google::Chart::WithRangeFill
+    Google::Chart::WithRangeMarker
+    Google::Chart::WithSolidFill
+);
 
-with 'Google::Chart::Type::Simple';
+sub _build_type { 'ls' }
 
 __PACKAGE__->meta->make_immutable;
-
-no Moose;
 
 1;
 

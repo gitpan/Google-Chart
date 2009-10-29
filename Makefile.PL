@@ -25,14 +25,15 @@ name 'Google-Chart';
 all_from('lib/Google/Chart.pm');
 
 requires 'LWP::UserAgent';
-requires 'Moose', '0.54';
-requires 'Class::MOP', '0.63';
+requires 'Moose', '0.92';
 requires 'URI';
 requires 'URI::Escape';
-requires 'Scalar::Util';
 
+test_requires 'Test::MockObject';
 test_requires 'Test::More' => '0.82';
 test_requires 'Test::UseAllModules';
+no_index directory => 'docs';
+no_index directory => 'tool';
 
-auto_include_deps;
+# auto_include_deps;
 WriteAll;

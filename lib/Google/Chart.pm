@@ -1,109 +1,74 @@
-# $Id$
 
 package Google::Chart;
-use 5.008;
 use Moose;
-use Google::Chart::Axis;
-use Google::Chart::Legend;
-use Google::Chart::Grid;
-use Google::Chart::Color;
 use Google::Chart::Data;
-use Google::Chart::Size;
-use Google::Chart::Type;
-use Google::Chart::Types;
 use Google::Chart::Title;
-use Google::Chart::Margin;
+use Google::Chart::Types;
 use LWP::UserAgent;
-use URI;
-use overload
-    '""' => \&as_uri,
-    fallback => 1,
-;
+use namespace::clean -except => qw(meta);
 
-use constant BASE_URI => URI->new("http://chart.apis.google.com/chart");
+our $VERSION = '0.09000_01';
 
-our $VERSION   = '0.05014';
-our $AUTHORITY = 'cpan:DMAKI';
-
-my %COMPONENTS = (
-    type => {
-        is => 'rw',
-        does => 'Google::Chart::Type',
-        coerce => 1,
-        required => 1,
-    },
-    data => {
-        is       => 'rw',
-        does     => 'Google::Chart::Data',
-        coerce   => 1,
-    },
-    color => {
-        is       => 'rw',
-        isa      => 'Google::Chart::Color',
-        coerce   => 1,
-    },
-    legend => {
-        is       => 'rw',
-        does     => 'Google::Chart::Legend',
-        coerce   => 1,
-    },
-    grid => {
-        is       => 'rw',
-        isa     => 'Google::Chart::Grid',
-        coerce   => 1,
-    },
-    size => {
-        is       => 'rw',
-        isa      => 'Google::Chart::Size',
-        coerce   => 1,
-        required => 1,
-        lazy     => 1,
-        default  => sub { Google::Chart::Size->new( width => 400, height => 300 ) },
-    },
-    marker => {
-        is       => 'rw',
-        isa      => 'Google::Chart::Marker',
-        coerce   => 1,
-    },
-    axis => {
-        is       => 'rw',
-        isa      => 'Google::Chart::Axis',
-        coerce   => 1,
-    },
-    fill => {
-        is       => 'rw',
-        does     => 'Google::Chart::Fill',
-        coerce   => 1
-    },
-    title => {
-        is       => 'rw',
-        does     => 'Google::Chart::Title',
-        coerce   => 1
-    },
-    margin => {
-        is       => 'rw',
-        does     => 'Google::Chart::Margin',
-        coerce   => 1
-    },
+has title => (
+    is        => 'ro',
+    isa       => 'Google::Chart::Title',
+    coerce    => 1,
+    predicate => 'has_title',
 );
-my @COMPONENTS = keys %COMPONENTS;
 
-{
-    while (my ($name, $spec) = each %COMPONENTS ) {
-        has $name => %$spec;
-    }
-}
-
-has 'ua' => (
-    is         => 'rw',
-    isa        => 'LWP::UserAgent',
-    required   => 1,
+has type => (
+    init_arg => undef, # should NOT be initialized by callers
+    is => 'ro',
+    isa => 'Str',
+    required => 1,
     lazy_build => 1,
 );
 
-__PACKAGE__->meta->make_immutable;
+has google_chart_uri => (
+    is => 'ro',
+    isa => 'URI',
+    lazy_build => 1
+);
 
-no Moose;
+has ua => (
+    is         => 'ro',
+    isa        => 'LWP::UserAgent',
+    lazy_build => 1,
+);
+
+has width => (
+    is       => 'rw',
+    isa      => 'Int',
+    required => 1
+);
+
+has height => (
+    is       => 'rw',
+    isa      => 'Int',
+    required => 1
+);
+
+around BUILDARGS => sub {
+    my ($next, $self, @args) = @_;
+    my $args = $next->($self, @args);
+
+    if (my $size = delete $args->{size}) {
+        my ($width, $height) = split /x/, $size;
+        $args->{width} = $width;
+        $args->{height} = $height;
+    }
+
+    return $args;
+};
+
+sub _build_google_chart_uri {
+    require URI;
+    return $ENV{GOOGLE_CHART_URI} ? 
+        URI->new($ENV{GOOGLE_CHART_URI}) :
+        URI->new("http://chart.apis.google.com/chart");
+}
+
+sub _build_type { confess "Unknown type $_[0] (Did you implement a _build_type() method ?" }
 
 sub _build_ua {
     my $self = shift;
@@ -114,31 +79,66 @@ sub _build_ua {
     return $ua;
 }
 
-# XXX 
-# We need a trigger function that gets called whenever a component
-# is set, so we can validate if the combination of components are
-# actually feasible.
+sub create {
+    my ($class, $chart_class, @args) = @_;
+
+    if ($chart_class !~ s/^\+//) {
+        $chart_class = "Google::Chart::Type::$chart_class";
+    }
+
+    if (! Class::MOP::is_class_loaded($chart_class) ) {
+        Class::MOP::load_class($chart_class);
+    }
+
+    return $chart_class->new(@args);
+}
+
+sub prepare_query {
+    my $self = shift;
+
+    my @query = (
+        cht => $self->type,
+        chs => join('x', $self->width, $self->height )
+    );
+
+    foreach my $element (map { $self->$_() } qw(title)) {
+        next unless defined $element;
+        my @params = $element->as_query( $self );
+        while (@params) {
+            my ($name, $value) = splice(@params, 0, 2);
+            next unless length $value;
+            push @query, ($name => $value);
+        }
+    }
+
+    return @query;
+}
 
 sub as_uri {
     my $self = shift;
 
-    my %query;
-    foreach my $c (@COMPONENTS) {
-        my $component = $self->$c;
-        next unless $component;
-        my @params = $component->as_query;
-        while (@params) {
-            my ($name, $value) = splice(@params, 0, 2);
-            next unless length $value;
-            $query{$name} = $value;
+    # If in case you want to change this for debugging or whatever...
+    my $uri = $self->google_chart_uri()->clone;
+    my @query = $self->prepare_query();
+
+    # XXX Be paranoid and don't squash duplicates... unless we should!
+    my %seen;
+    my @final;
+    while (@query) {
+        my ($key, $value) = splice(@query, 0, 2);
+        if ($key =~ /^ch[mf]$/) {
+            if ($seen{$key}) {
+                ${$seen{$key}} = join( '|', ${$seen{$key}}, $value );
+            } else {
+                $seen{$key} = \$value;
+                push @final, ($key => $value);
+            }
+        } else {
+            push @final, ($key => $value);
         }
     }
 
-    # If in case you want to change this for debugging or whatever...
-    my $uri = $ENV{GOOGLE_CHART_URI} ? 
-        URI->new($ENV{GOOGLE_CHART_URI}) :
-        BASE_URI->clone;
-    $uri->query_form( %query );
+    $uri->query_form( @final );
     return $uri;
 }
 
@@ -168,11 +168,11 @@ sub render_to_file {
     close $fh or die "can't close $filename: $!\n";
 }
 
+__PACKAGE__->meta->make_immutable;
+
 1;
 
 __END__
-
-=encoding UTF-8
 
 =head1 NAME
 
@@ -182,9 +182,23 @@ Google::Chart - Interface to Google Charts API
 
   use Google::Chart;
 
-  my $chart = Google::Chart->new(
-    type => "Bar",
-    data => [ 1, 2, 3, 4, 5 ]
+  my $chart = Google::Chart->create(
+    Bar => (
+      bar_space   => 20,
+      bar_width   => 10,
+      group_space => 5,
+      orientation => 'horizontal'
+      size        => "400x300",
+      stacked     => 1, 
+    )
+  );
+  $chart->add_axis(
+    location => 'x',
+    label => [ qw(foo bar baz) ],
+  );
+  $chart->add_dataset(
+    color => 'FF0000',
+    data => [ 1, 2, 3, 4, 5 ],
   );
 
   print $chart->as_uri, "\n"; # or simply print $chart, "\n"
@@ -196,77 +210,41 @@ Google::Chart - Interface to Google Charts API
 Google::Chart provides a Perl Interface to Google Charts API 
 (http://code.google.com/apis/chart/).
 
-Please note that version 0.05000 is a major rewrite, and has little to no
+Please note that version 0.10000 is a major rewrite, and has little to no
 backwards compatibility.
 
 =head1 METHODS
 
-=head2 new(%args)
+=head2 create( $chart_type => %args )
 
-Creates a new Google::Chart instance. 
+Creates a new chart of type $chart_type. The rest of the arguments are passed
+to the constructor of the appropriate $chart_type class. Each chart type may
+have a different set of attributes that it can initialize, but the following
+are common to all chrats:
 
 =over 4
 
-=item type
+=item width, height
 
-Specifies the chart type, such as line, bar, pie, etc. If given a string like
-'Bar', it will instantiate an instance of Google::Chart::Type::Bar by
-invoking argument-less constructor.
+Specifies the chart width and height.
 
-If you want to pass parameters to the constructor, either pass in an
-already instanstiated object, or pass in a hash, which will be coerced to
-the appropriate object
+=item size (deprecated)
 
-  my $chart = Google::Chart->new(
-    type => Google::Chart::Bar->new(
-      orientation => "horizontal"
-    )
-  );
-
-  # or
-
-  my $chart = Google::Chart->new(
-    type => {
-      module => "Bar",
-      args   => {
-        orientation => "horizontal"
-      }
-    }
-  );
-
-=item size
-
-Specifies the chart size. Strings like "400x300", hash references, or already
-instantiated objects can be used:
+Strings like "400x300" are converted to their respective width and height
 
   my $chart = Google::Chart->new(
     size => "400x300",
   );
 
-  my $chart = Google::Chart->new(
-    size => {
-      width => 400,
-      height => 300
-    }
-  );
-
-=item marker
-
-Specifies the markers that go on line charts.
-
-=item axis
-
-Specifies the axis labels and such that go on line and bar charts
-
-=item legend
-
-=item color
-
-=item fill
-
-=item
+=item title
 
 =back
+
+Other parameters differ depending on the chart type.
+
+=head2 new(%args)
+
+Creates a new Google::Chart instance. You should be using C<create> unless you're hacking on a new chart type.
 
 =head2 as_uri()
 
@@ -304,16 +282,15 @@ code snippets, pseudocode, or even better, test cases, are most welcome.
 
 =over 4
 
-=item Standardize Interface
+=item Coverage
 
-Objects need to expect data in a standard format. This is not the case yet.
-(comments welcome)
+I've taken Google::Chart and challenged myself to implement every example
+in the developer's manual (the japanese version, anyway). Unfortunately
+there are a handful of examples that don't render /exactly/ the way it's in
+the documents.
 
-=item Moose-ish Errors
-
-I've been reported that some Moose-related errors occur on certain platforms.
-I have not been able to reproduce it myself, so if you do, please let me
-know.
+You can check which ones are failing in the included "samples.html",
+and send us patches ;)
 
 =back
 
