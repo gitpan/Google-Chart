@@ -28,4 +28,4 @@ requires:
   URI::Escape: 0
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.09000_01
+version: 0.09000_02
