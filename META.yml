@@ -22,10 +22,14 @@ no_index:
     - inc
     - t
 requires:
+  Encode: 0
   LWP::UserAgent: 0
   Moose: 0.92
+  Scalar::Util: 0
+  Sub::Exporter: 0
   URI: 0
   URI::Escape: 0
+  namespace::clean: 0
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.09000_02
+version: 0.09000_03
