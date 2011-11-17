@@ -1,6 +1,10 @@
 Changes
 ======
 
+0.09000_05 Nov 09 2011
+  * What, it's been 2 yrs?!
+  * Fix silly moosey warning. oh, come on. Reported by Adam Kennedy.
+
 0.09000_04 Nov 09 2009
   * rt #51225 t/108_env_proxy.t was failing when http_proxy was being 
     explicitly set.
